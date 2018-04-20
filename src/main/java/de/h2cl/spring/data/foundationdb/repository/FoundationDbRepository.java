@@ -18,6 +18,9 @@ package de.h2cl.spring.data.foundationdb.repository;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+/**
+ * Subtype {@link org.springframework.stereotype.Repository @Repository} for FoundationDb usage.
+ */
 @NoRepositoryBean
 public interface FoundationDbRepository<T, ID> extends PagingAndSortingRepository<T, ID> {
 }
