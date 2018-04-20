@@ -13,8 +13,21 @@
     <description>FoundationDB support for Spring Data</description>
     <url>https://github.com/martinjunker/myspring-data-foundationdb</url>
 
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <spring.version>5.0.4.RELEASE</spring.version>
+        <spring-data.version>2.0.1.RELEASE</spring-data.version>
+
         <version.fdb>5.1.5</version.fdb>
         <version.spring.framework>5.0.4.RELEASE</version.spring.framework>
     </properties>
@@ -32,12 +45,41 @@
     </developers>
 
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.data</groupId>
+                <artifactId>spring-data-commons</artifactId>
+                <version>${spring-data.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
+
         <!-- FoundationDB -->
         <dependency>
             <groupId>com.apple.cie.foundationdb</groupId>
             <artifactId>fdb-java</artifactId>
             <version>${version.fdb}</version>
+        </dependency>
+
+        <!-- Spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+
+        <!-- Spring Data -->
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
         </dependency>
 
         <!-- Utils -->
@@ -48,12 +90,11 @@
             <scope>provided</scope>
         </dependency>
 
-        <!-- TEST -->
+        <!-- Test -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <scope>test</scope>
-            <version>${version.spring.framework}</version>
         </dependency>
     </dependencies>
 
