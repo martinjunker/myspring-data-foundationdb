@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>de.h2cl.spring.data</groupId>
+    <artifactId>myspring-data-foundationdb</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>MySpring Data FoundationDB</name>
+    <description>FoundationDB support for Spring Data</description>
+    <url>https://github.com/martinjunker/myspring-data-foundationdb</url>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.fdb>5.1.5</version.fdb>
+        <version.spring.framework>5.0.4.RELEASE</version.spring.framework>
+    </properties>
+
+    <developers>
+        <developer>
+            <id>mjunker</id>
+            <name>Martin Junker</name>
+            <email>mj at h2cl.de</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+            <timezone>+2</timezone>
+        </developer>
+    </developers>
+
+
+    <dependencies>
+        <!-- FoundationDB -->
+        <dependency>
+            <groupId>com.apple.cie.foundationdb</groupId>
+            <artifactId>fdb-java</artifactId>
+            <version>${version.fdb}</version>
+        </dependency>
+
+        <!-- Utils -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.20</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- TEST -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+            <version>${version.spring.framework}</version>
+        </dependency>
+    </dependencies>
+
+
+</project>
