@@ -25,6 +25,7 @@ import java.lang.annotation.Target;
 
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 
 import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbRepositoryFactoryBean;
 
@@ -38,6 +39,7 @@ import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbRepositor
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
+@Import(FoundationDbRepositoriesRegistrar.class)
 public @interface EnableFoundationDbRepositories {
 
 
