@@ -18,35 +18,20 @@ package de.h2cl.spring.data.foundationdb.repository.support;
 
 import java.io.Serializable;
 
+import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactoryBean;
 import org.springframework.data.repository.Repository;
-import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
-import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 
 import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
 
 /**
  * {@link org.springframework.beans.factory.FactoryBean} to create {@link FoundationDbRepository} instances.
- *
- * @author Martin Junker
  */
 public class FoundationDbRepositoryFactoryBean<T extends Repository<S, ID>, S, ID extends Serializable>
-        extends RepositoryFactoryBeanSupport<T, S, ID> {
-    protected FoundationDbRepositoryFactoryBean(Class<? extends T> repositoryInterface) {
+        extends KeyValueRepositoryFactoryBean<T, S, ID> {
+
+    public FoundationDbRepositoryFactoryBean(Class<? extends T> repositoryInterface) {
         super(repositoryInterface);
     }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see
-     * org.springframework.data.repository.support.RepositoryFactoryBeanSupport
-     * #createRepositoryFactory()
-     */
-    @Override
-    protected RepositoryFactorySupport createRepositoryFactory() {
-        return new FoundationDbRepositoryFactory();
-    }
-
 
 }
 

@@ -13,12 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.h2cl.spring.data.foundationdb.repository.query;
+package de.h2cl.spring.data.foundationdb.repository.config;
 
-import org.springframework.data.repository.core.EntityInformation;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.keyvalue.core.KeyValueOperations;
+import org.springframework.data.keyvalue.core.KeyValueTemplate;
 
-/**
- * FoundationDB specific {@link EntityInformation}.
- */
-public interface FoundationDbEntityInformation<T, ID> extends EntityInformation<T, ID> {
+import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbKeyValueAdapter;
+
+@Configuration
+public class FoundationDbConfiguration {
+
+    @Bean
+    public KeyValueOperations keyValueTemplate() {
+        return new KeyValueTemplate(new FoundationDbKeyValueAdapter());
+    }
 }

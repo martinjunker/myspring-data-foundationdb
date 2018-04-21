@@ -15,94 +15,18 @@
  */
 package de.h2cl.spring.data.foundationdb.repository.support;
 
-import java.util.Optional;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.keyvalue.core.KeyValueOperations;
+import org.springframework.data.keyvalue.repository.support.SimpleKeyValueRepository;
+import org.springframework.data.repository.core.EntityInformation;
 
 import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
 
 /**
  * Repository base implementation for FoundationDb
  */
-public class SimpleFoundationDbRepository<T, ID> implements FoundationDbRepository<T, ID> {
+public class SimpleFoundationDbRepository<T, ID> extends SimpleKeyValueRepository<T, ID> implements FoundationDbRepository<T, ID> {
 
-    @Override
-    public Iterable<T> findAll(Sort sort) {
-        // TODO implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Page<T> findAll(Pageable pageable) {
-        // TODO implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <S extends T> S save(S s) {
-        // TODO implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <S extends T> Iterable<S> saveAll(Iterable<S> iterable) {
-        // TODO implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Optional<T> findById(ID id) {
-        // TODO implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean existsById(ID id) {
-        // TODO implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Iterable<T> findAll() {
-        // TODO implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Iterable<T> findAllById(Iterable<ID> iterable) {
-        // TODO implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public long count() {
-        // TODO implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void deleteById(ID id) {
-        // TODO implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void delete(T t) {
-        // TODO implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void deleteAll(Iterable<? extends T> iterable) {
-        // TODO implement
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void deleteAll() {
-        // TODO implement
-        throw new UnsupportedOperationException();
+    public SimpleFoundationDbRepository(EntityInformation<T, ID> metadata, KeyValueOperations operations) {
+        super(metadata, operations);
     }
 }

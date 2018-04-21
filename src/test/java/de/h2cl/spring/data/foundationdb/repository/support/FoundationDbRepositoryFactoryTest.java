@@ -21,18 +21,26 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.repository.Repository;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import de.h2cl.spring.data.foundationdb.repository.config.FoundationDbConfiguration;
 import de.h2cl.spring.data.foundationdb.repository.support.sample.Offer;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = {FoundationDbConfiguration.class})
 public class FoundationDbRepositoryFactoryTest {
 
-    @Test
-    public void createsRepositoryWithIdTypeLong() {
+    @Autowired
+    private KeyValueOperations keyValueOperations;
 
-        FoundationDbRepositoryFactory factory = new FoundationDbRepositoryFactory();
+    @Test
+    public void createsRepository() {
+
+        FoundationDbRepositoryFactory factory = new FoundationDbRepositoryFactory(keyValueOperations);
         MyOfferRepository repository = factory.getRepository(MyOfferRepository.class);
         assertThat(repository, is(notNullValue()));
     }

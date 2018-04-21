@@ -15,51 +15,28 @@
  */
 package de.h2cl.spring.data.foundationdb.repository.support;
 
-import java.io.Serializable;
-
-import org.springframework.data.repository.core.EntityInformation;
-import org.springframework.data.repository.core.RepositoryInformation;
-import org.springframework.data.repository.core.RepositoryMetadata;
-import org.springframework.data.repository.core.support.RepositoryFactorySupport;
-import org.springframework.lang.Nullable;
+import org.springframework.data.keyvalue.core.KeyValueOperations;
+import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory;
+import org.springframework.data.repository.query.RepositoryQuery;
+import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 
 import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
-import de.h2cl.spring.data.foundationdb.repository.query.FoundationDbEntityInformation;
 
 /**
  * Factory to create {@link FoundationDbRepository} instances.
  */
-public class FoundationDbRepositoryFactory extends RepositoryFactorySupport {
+public class FoundationDbRepositoryFactory extends KeyValueRepositoryFactory {
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.core.support.RepositoryFactorySupport#getEntityInformation(java.lang.Class)
-     */
-    @Override
-    public <T, ID> EntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
-        return getEntityInformation(domainClass, null);
+
+    public FoundationDbRepositoryFactory(KeyValueOperations keyValueOperations) {
+        super(keyValueOperations);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.core.support.RepositoryFactorySupport#getTargetRepository(org.springframework.data.repository.core.RepositoryInformation)
-     */
-    @Override
-    protected Object getTargetRepository(RepositoryInformation information) {
-        FoundationDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(information.getDomainType(),
-                information);
-        return getTargetRepositoryViaReflection(information, entityInformation);
+    public FoundationDbRepositoryFactory(KeyValueOperations keyValueOperations, Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
+        super(keyValueOperations, queryCreator);
     }
 
-    @Override
-    protected Class<?> getRepositoryBaseClass(RepositoryMetadata repositoryMetadata) {
-        return SimpleFoundationDbRepository.class;
-    }
-
-
-    private <T, ID> FoundationDbEntityInformation<T, ID> getEntityInformation(Class<T> domainClass,
-                                                                              @Nullable RepositoryMetadata metadata) {
-        // TODO implement
-        throw new UnsupportedOperationException();
+    public FoundationDbRepositoryFactory(KeyValueOperations keyValueOperations, Class<? extends AbstractQueryCreator<?, ?>> queryCreator, Class<? extends RepositoryQuery> repositoryQueryType) {
+        super(keyValueOperations, queryCreator, repositoryQueryType);
     }
 }
