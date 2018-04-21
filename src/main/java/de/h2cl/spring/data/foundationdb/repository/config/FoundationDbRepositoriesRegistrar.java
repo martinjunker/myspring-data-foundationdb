@@ -41,7 +41,7 @@ class FoundationDbRepositoriesRegistrar extends RepositoryBeanDefinitionRegistra
     }
 
     /**
-     * Hazelcast-specific {@link RepositoryConfigurationExtension}.
+     * FoundationDb-specific {@link RepositoryConfigurationExtension}.
      *
      * @author Oliver Gierke
      */
