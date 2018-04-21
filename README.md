@@ -1,6 +1,8 @@
 # myspring-data-foundationdb
 a try of a spring data foundationdb community project
 
+[![Build Status](https://travis-ci.org/martinjunker/myspring-data-foundationdb.svg?branch=master)](https://travis-ci.org/martinjunker/myspring-data-foundationdb)
+
 ## install jar
 since the java driver is not present in maven central you should download it from [https://www.foundationdb.org](https://www.foundationdb.org/downloads/5.1.5/bindings/java/fdb-java-5.1.5.jar) and add it manually to your maven repository:
 
