@@ -17,7 +17,6 @@ package de.h2cl.spring.data.foundationdb.repository.support;
 
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory;
-import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 
 import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
@@ -34,9 +33,5 @@ public class FoundationDbRepositoryFactory extends KeyValueRepositoryFactory {
 
     public FoundationDbRepositoryFactory(KeyValueOperations keyValueOperations, Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
         super(keyValueOperations, queryCreator);
-    }
-
-    public FoundationDbRepositoryFactory(KeyValueOperations keyValueOperations, Class<? extends AbstractQueryCreator<?, ?>> queryCreator, Class<? extends RepositoryQuery> repositoryQueryType) {
-        super(keyValueOperations, queryCreator, repositoryQueryType);
     }
 }
