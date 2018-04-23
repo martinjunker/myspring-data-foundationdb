@@ -26,6 +26,9 @@ import java.lang.annotation.Target;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.keyvalue.repository.config.QueryCreatorType;
+import org.springframework.data.keyvalue.repository.query.CachingKeyValuePartTreeQuery;
+import org.springframework.data.keyvalue.repository.query.SpelQueryCreator;
 
 import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbRepositoryFactoryBean;
 
@@ -40,6 +43,7 @@ import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbRepositor
 @Documented
 @Inherited
 @Import(FoundationDbRepositoriesRegistrar.class)
+@QueryCreatorType(value = SpelQueryCreator.class, repositoryQueryType = CachingKeyValuePartTreeQuery.class)
 public @interface EnableFoundationDbRepositories {
 
 

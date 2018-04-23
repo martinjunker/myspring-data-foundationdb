@@ -20,13 +20,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.core.KeyValueTemplate;
 
+import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbDatabaseFactory;
 import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbKeyValueAdapter;
 
 @Configuration
 public class FoundationDbConfiguration {
 
     @Bean
-    public KeyValueOperations keyValueTemplate() {
-        return new KeyValueTemplate(new FoundationDbKeyValueAdapter());
+    public KeyValueOperations keyValueTemplate(FoundationDbDatabaseFactory databaseFactory) {
+        return new KeyValueTemplate(new FoundationDbKeyValueAdapter(databaseFactory));
+    }
+
+    @Bean
+    public FoundationDbDatabaseFactory databaseFactory() {
+        return new FoundationDbDatabaseFactory();
     }
 }

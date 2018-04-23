@@ -17,7 +17,6 @@ package de.h2cl.spring.data.foundationdb.repository.config;
 
 import java.lang.annotation.Annotation;
 
-import org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension;
 import org.springframework.data.repository.config.RepositoryBeanDefinitionRegistrarSupport;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
@@ -40,41 +39,4 @@ class FoundationDbRepositoriesRegistrar extends RepositoryBeanDefinitionRegistra
         return new FoundationDbRepositoryConfigurationExtension();
     }
 
-    /**
-     * FoundationDb-specific {@link RepositoryConfigurationExtension}.
-     *
-     * @author Oliver Gierke
-     */
-    private static class FoundationDbRepositoryConfigurationExtension extends KeyValueRepositoryConfigurationExtension {
-
-        /*
-         * (non-Javadoc)
-         * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
-         *                          #getModuleName()
-         */
-        @Override
-        public String getModuleName() {
-            return "FoundationDb";
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
-         *                          #getModulePrefix()
-         */
-        @Override
-        protected String getModulePrefix() {
-            return "foundationdb";
-        }
-
-        /*
-         * (non-Javadoc)
-         * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
-         *                          #getDefaultKeyValueTemplateRef()
-         */
-        @Override
-        protected String getDefaultKeyValueTemplateRef() {
-            return "keyValueTemplate";
-        }
-    }
 }

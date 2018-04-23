@@ -18,17 +18,38 @@ package de.h2cl.spring.data.foundationdb.repository.support;
 import java.util.Map;
 
 import org.springframework.data.keyvalue.core.AbstractKeyValueAdapter;
+import org.springframework.data.keyvalue.core.KeyValueAdapter;
 import org.springframework.data.util.CloseableIterator;
+import org.springframework.util.Assert;
+
+import com.apple.foundationdb.Database;
+import com.apple.foundationdb.tuple.Tuple;
 
 /**
+ * {@link KeyValueAdapter} implementation for {@link com.apple.foundationdb.FDBDatabase}.
  * TODO Implement! ;)
+ *
+ * @author Martin Junker
  */
 public class FoundationDbKeyValueAdapter extends AbstractKeyValueAdapter {
 
+    private final Database database;
+
+    public FoundationDbKeyValueAdapter(FoundationDbDatabaseFactory databaseFactory) {
+        database = databaseFactory.build();
+    }
 
     @Override
     public Object put(Object id, Object item, String keyspace) {
-        throw new UnsupportedOperationException();
+
+        Assert.notNull(id, "Cannot add item with null id.");
+        Assert.notNull(keyspace, "Cannot add item for null collection.");
+
+        database.run(tr -> {
+            tr.set(Tuple.from(id).pack(), Tuple.from(item).pack());
+            return null;
+        });
+        return null;
     }
 
     @Override
@@ -38,7 +59,11 @@ public class FoundationDbKeyValueAdapter extends AbstractKeyValueAdapter {
 
     @Override
     public Object get(Object id, String keyspace) {
-        throw new UnsupportedOperationException();
+
+        return database.run(tr -> {
+            byte[] result = tr.get(Tuple.from(id).pack()).join();
+            return Tuple.fromBytes(result).getString(0);
+        });
     }
 
     @Override
