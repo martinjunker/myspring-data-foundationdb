@@ -28,6 +28,7 @@ import com.apple.foundationdb.tuple.Tuple;
 /**
  * {@link KeyValueAdapter} implementation for {@link com.apple.foundationdb.FDBDatabase}.
  * TODO Implement! ;)
+ * Unless I'm not sure if keySpace could be a database or cluster I keep it as default null.
  *
  * @author Martin Junker
  */
@@ -39,38 +40,65 @@ public class FoundationDbKeyValueAdapter extends AbstractKeyValueAdapter {
         database = databaseFactory.build();
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.keyvalue.core.KeyValueAdapter#put(java.lang.Object, java.lang.Object, java.lang.String)
+     */
     @Override
     public Object put(Object id, Object item, String keyspace) {
 
         Assert.notNull(id, "Cannot add item with null id.");
-        Assert.notNull(keyspace, "Cannot add item for null collection.");
-
-        database.run(tr -> {
-            tr.set(Tuple.from(id).pack(), Tuple.from(item).pack());
-            return null;
-        });
-        return null;
-    }
-
-    @Override
-    public boolean contains(Object id, String keyspace) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Object get(Object id, String keyspace) {
+        // Assert.notNull(keySpace, "Cannot add item for null collection.");
 
         return database.run(tr -> {
             byte[] result = tr.get(Tuple.from(id).pack()).join();
-            return Tuple.fromBytes(result).getString(0);
+            tr.set(Tuple.from(id).pack(), Tuple.from(item).pack());
+            return Tuple.fromBytes(result).get(0);
         });
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.keyvalue.core.KeyValueAdapter#contains(java.lang.Object, java.lang.String)
+     */
     @Override
-    public Object delete(Object id, String keyspace) {
-        throw new UnsupportedOperationException();
+    public boolean contains(Object id, String keyspace) {
+        return get(id, keyspace) != null;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.keyvalue.core.KeyValueAdapter#get(java.lang.Object, java.lang.String)
+     */
+    @Override
+    public Object get(Object id, String keyspace) {
+
+        Assert.notNull(id, "Cannot get item with null id.");
+        return database.run(tr -> {
+            byte[] result = tr.get(Tuple.from(id).pack()).join();
+            return Tuple.fromBytes(result).get(0);
+        });
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.keyvalue.core.KeyValueAdapter#delete(java.lang.Object, java.lang.String)
+     */
+    @Override
+    public Object delete(Object id, String keyspace) {
+
+        Assert.notNull(id, "Cannot delete item with null id.");
+        return database.run(tr -> {
+            byte[] result = tr.get(Tuple.from(id).pack()).join();
+            tr.clear(Tuple.from(id).pack());
+            return Tuple.fromBytes(result).get(0);
+        });
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.keyvalue.core.KeyValueAdapter#getAllOf(java.lang.String)
+     */
     @Override
     public Iterable<?> getAllOf(String keyspace) {
         throw new UnsupportedOperationException();
