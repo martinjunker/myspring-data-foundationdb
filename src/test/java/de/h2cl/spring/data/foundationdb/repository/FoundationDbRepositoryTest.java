@@ -13,35 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.h2cl.spring.data.foundationdb.repository.support;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
-import static org.junit.Assert.assertThat;
+package de.h2cl.spring.data.foundationdb.repository;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.keyvalue.core.KeyValueOperations;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import de.h2cl.spring.data.foundationdb.repository.config.EnableFoundationDbRepositories;
 import de.h2cl.spring.data.foundationdb.repository.config.FoundationDbConfiguration;
-import de.h2cl.spring.data.foundationdb.repository.support.sample.OfferRepository;
+import de.h2cl.spring.data.foundationdb.repository.support.sample.Offer;
 
 @RunWith(SpringRunner.class)
+@DirtiesContext
 @ContextConfiguration(classes = {FoundationDbConfiguration.class})
-public class FoundationDbRepositoryFactoryTest {
+@EnableFoundationDbRepositories(basePackageClasses = FoundationDbRepository.class)
+public class FoundationDbRepositoryTest {
 
     @Autowired
-    private KeyValueOperations keyValueOperations;
+    KeyValueOperations keyValueTemplate;
 
     @Test
-    public void createsRepository() {
-
-        FoundationDbRepositoryFactory factory = new FoundationDbRepositoryFactory(keyValueOperations);
-        OfferRepository repository = factory.getRepository(OfferRepository.class);
-        assertThat(repository, is(notNullValue()));
+    public void simpleCrudTest() {
+        keyValueTemplate.findById("ID_1", Offer.class);
+        //keyValueTemplate.insert(new Offer("ID_1"));
     }
-
 }

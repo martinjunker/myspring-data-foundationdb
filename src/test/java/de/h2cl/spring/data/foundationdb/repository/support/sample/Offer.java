@@ -15,5 +15,13 @@
  */
 package de.h2cl.spring.data.foundationdb.repository.support.sample;
 
+import org.springframework.data.annotation.Id;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
 public class Offer {
+
+    @Id
+    private final String id;
 }

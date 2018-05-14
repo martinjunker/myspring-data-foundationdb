@@ -35,4 +35,5 @@ public class FoundationDbConfiguration {
     public FoundationDbDatabaseFactory databaseFactory() {
         return new FoundationDbDatabaseFactory();
     }
+
 }

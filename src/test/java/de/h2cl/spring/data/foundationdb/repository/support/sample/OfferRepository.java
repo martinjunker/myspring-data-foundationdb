@@ -15,7 +15,7 @@
  */
 package de.h2cl.spring.data.foundationdb.repository.support.sample;
 
-import org.springframework.data.repository.Repository;
+import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
 
-public interface OfferRepository extends Repository<Offer, Long> {
+public interface OfferRepository extends FoundationDbRepository<Offer, Long> {
 }

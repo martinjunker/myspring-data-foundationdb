@@ -76,6 +76,9 @@ public class FoundationDbKeyValueAdapter extends AbstractKeyValueAdapter {
         Assert.notNull(id, "Cannot get item with null id.");
         return database.run(tr -> {
             byte[] result = tr.get(Tuple.from(id).pack()).join();
+            if(result == null) {
+                return null;
+            }
             return Tuple.fromBytes(result).get(0);
         });
     }
@@ -90,6 +93,9 @@ public class FoundationDbKeyValueAdapter extends AbstractKeyValueAdapter {
         Assert.notNull(id, "Cannot delete item with null id.");
         return database.run(tr -> {
             byte[] result = tr.get(Tuple.from(id).pack()).join();
+            if (result == null) {
+                return null;
+            }
             tr.clear(Tuple.from(id).pack());
             return Tuple.fromBytes(result).get(0);
         });
@@ -116,7 +122,7 @@ public class FoundationDbKeyValueAdapter extends AbstractKeyValueAdapter {
 
     @Override
     public void clear() {
-        throw new UnsupportedOperationException();
+        database.close();
     }
 
     @Override
@@ -126,6 +132,6 @@ public class FoundationDbKeyValueAdapter extends AbstractKeyValueAdapter {
 
     @Override
     public void destroy() throws Exception {
-        throw new UnsupportedOperationException();
+        database.close();
     }
 }

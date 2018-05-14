@@ -42,9 +42,7 @@ public class FoundationDbIT {
     @Test
     public void crudTest() {
 
-
         try (Database db = fdb.open()) {
-
 
             // Run an operation on the database
             db.run(tr -> {
