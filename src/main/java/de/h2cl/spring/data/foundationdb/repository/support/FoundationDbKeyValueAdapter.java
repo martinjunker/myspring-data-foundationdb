@@ -52,6 +52,9 @@ public class FoundationDbKeyValueAdapter extends AbstractKeyValueAdapter {
 
         return database.run(tr -> {
             byte[] result = tr.get(Tuple.from(id).pack()).join();
+            if(result == null) {
+                return null;
+            }
             tr.set(Tuple.from(id).pack(), Tuple.from(item).pack());
             return Tuple.fromBytes(result).get(0);
         });

@@ -26,6 +26,7 @@ import java.lang.annotation.Target;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.keyvalue.core.KeyValueOperations;
 import org.springframework.data.keyvalue.repository.config.QueryCreatorType;
 import org.springframework.data.keyvalue.repository.query.CachingKeyValuePartTreeQuery;
 import org.springframework.data.keyvalue.repository.query.SpelQueryCreator;
@@ -100,4 +101,11 @@ public @interface EnableFoundationDbRepositories {
      * @return
      */
     Class<?> repositoryFactoryBeanClass() default FoundationDbRepositoryFactoryBean.class;
+
+    /**
+     * Configures the name of the {@link KeyValueOperations} bean to be used with the repositories detected.
+     *
+     * @return
+     */
+    String keyValueTemplateRef() default "foundationDbKeyValueTemplate";
 }

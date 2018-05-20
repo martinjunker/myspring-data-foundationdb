@@ -15,6 +15,10 @@
  */
 package de.h2cl.spring.data.foundationdb.repository;
 
+import static org.junit.Assert.assertFalse;
+
+import java.util.UUID;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,18 +31,25 @@ import de.h2cl.spring.data.foundationdb.repository.config.EnableFoundationDbRepo
 import de.h2cl.spring.data.foundationdb.repository.config.FoundationDbConfiguration;
 import de.h2cl.spring.data.foundationdb.repository.support.sample.Offer;
 
+/**
+ * IntegrationTest needs FoundationDB to be running
+ */
 @RunWith(SpringRunner.class)
 @DirtiesContext
 @ContextConfiguration(classes = {FoundationDbConfiguration.class})
 @EnableFoundationDbRepositories(basePackageClasses = FoundationDbRepository.class)
 public class FoundationDbRepositoryTest {
 
+    private static final String ID = "ID_1";
+
     @Autowired
     KeyValueOperations keyValueTemplate;
 
     @Test
     public void simpleCrudTest() {
-        keyValueTemplate.findById("ID_1", Offer.class);
-        //keyValueTemplate.insert(new Offer("ID_1"));
+        assertFalse(keyValueTemplate.findById(ID, Offer.class).isPresent());
+
+        keyValueTemplate.insert("ID_1", UUID.randomUUID());
+        // keyValueTemplate.insert(new Offer("ID_1"));
     }
 }
