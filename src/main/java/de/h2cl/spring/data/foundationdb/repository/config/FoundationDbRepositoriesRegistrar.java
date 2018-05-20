@@ -20,20 +20,27 @@ import java.lang.annotation.Annotation;
 import org.springframework.data.repository.config.RepositoryBeanDefinitionRegistrarSupport;
 import org.springframework.data.repository.config.RepositoryConfigurationExtension;
 
+
 /**
- * Special {@link KeyValueRepositoriesRegistrar} to point the infrastructure to inspect
- * {@link EnableFoundationDbRepositories}.
+ * Map specific {@link RepositoryBeanDefinitionRegistrarSupport} implementation.
  *
- * @author Oliver Gierke
- * @author Neil Stevenson
+ * @author Christoph Strobl
  */
 class FoundationDbRepositoriesRegistrar extends RepositoryBeanDefinitionRegistrarSupport {
 
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.repository.config.RepositoryBeanDefinitionRegistrarSupport#getAnnotation()
+     */
     @Override
     protected Class<? extends Annotation> getAnnotation() {
         return EnableFoundationDbRepositories.class;
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.repository.config.RepositoryBeanDefinitionRegistrarSupport#getExtension()
+     */
     @Override
     protected RepositoryConfigurationExtension getExtension() {
         return new FoundationDbRepositoryConfigurationExtension();
