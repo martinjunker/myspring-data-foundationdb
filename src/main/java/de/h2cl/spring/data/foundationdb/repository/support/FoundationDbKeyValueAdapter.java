@@ -25,6 +25,8 @@ import org.springframework.util.Assert;
 import com.apple.foundationdb.Database;
 import com.apple.foundationdb.tuple.Tuple;
 
+import de.h2cl.spring.data.foundationdb.repository.FoundationDbDatabaseFactory;
+
 /**
  * {@link KeyValueAdapter} implementation for {@link com.apple.foundationdb.FDBDatabase}.
  * TODO Implement! ;)
@@ -35,6 +37,14 @@ import com.apple.foundationdb.tuple.Tuple;
 public class FoundationDbKeyValueAdapter extends AbstractKeyValueAdapter {
 
     private final Database database;
+
+    public FoundationDbKeyValueAdapter() {
+        this.database = new FoundationDbDatabaseFactory().build();
+    }
+
+    public FoundationDbKeyValueAdapter(Database database) {
+        this.database = database;
+    }
 
     public FoundationDbKeyValueAdapter(FoundationDbDatabaseFactory databaseFactory) {
         database = databaseFactory.build();

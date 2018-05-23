@@ -15,7 +15,14 @@
  */
 package de.h2cl.spring.data.foundationdb.repository.config;
 
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.data.config.ParsingUtils;
+import org.springframework.data.keyvalue.core.KeyValueTemplate;
 import org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension;
+import org.springframework.data.map.MapKeyValueAdapter;
+import org.springframework.data.repository.config.RepositoryConfigurationSource;
 
 /**
  *
@@ -52,4 +59,21 @@ public class FoundationDbRepositoryConfigurationExtension extends KeyValueReposi
         return "foundationDbKeyValueTemplate";
     }
 
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension#getDefaultKeyValueTemplateBeanDefinition()
+     */
+    @Override
+    protected AbstractBeanDefinition getDefaultKeyValueTemplateBeanDefinition(
+            RepositoryConfigurationSource configurationSource) {
+
+        BeanDefinitionBuilder adapterBuilder = BeanDefinitionBuilder.rootBeanDefinition(MapKeyValueAdapter.class);
+
+        BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(KeyValueTemplate.class);
+        builder
+                .addConstructorArgValue(ParsingUtils.getSourceBeanDefinition(adapterBuilder, configurationSource.getSource()));
+        builder.setRole(BeanDefinition.ROLE_SUPPORT);
+
+        return ParsingUtils.getSourceBeanDefinition(builder, configurationSource.getSource());
+    }
 }

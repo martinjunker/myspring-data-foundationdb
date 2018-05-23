@@ -17,37 +17,38 @@ package de.h2cl.spring.data.foundationdb.repository.config;
 
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.map.repository.config.MapRepositoriesRegistrar;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import com.apple.foundationdb.Database;
+
 import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
+import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbKeyValueAdapter;
 
 import lombok.Data;
 
-/**
- * Integration tests for {@link MapRepositoriesRegistrar} with complete defaulting.
- *
- * @author Christoph Strobl
- * @author Mark Paluch
- */
 @RunWith(SpringRunner.class)
 @ContextConfiguration
-@Ignore //TODO needs to be mocked
-public class FoundationDbRepositoryRegistrarWithFullDefaultingIntegrationTests {
+public class FoundationDbRepositoryRegistrarWithTemplateDefinitionIntegrationTests {
 
     @Configuration
     @EnableFoundationDbRepositories(considerNestedRepositories = true)
     static class Config {
+
+        @Bean
+        public FoundationDbKeyValueAdapter foundationDbKeyValueAdapter() {
+            return new FoundationDbKeyValueAdapter(mock(Database.class));
+        }
 
     }
 

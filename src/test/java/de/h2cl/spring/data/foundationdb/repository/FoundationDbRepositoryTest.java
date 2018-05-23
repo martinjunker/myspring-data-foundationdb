@@ -15,41 +15,80 @@
  */
 package de.h2cl.spring.data.foundationdb.repository;
 
+import static java.lang.Boolean.TRUE;
+import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 
+import java.util.List;
 import java.util.UUID;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.keyvalue.core.KeyValueOperations;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.annotation.Id;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import de.h2cl.spring.data.foundationdb.repository.config.EnableFoundationDbRepositories;
-import de.h2cl.spring.data.foundationdb.repository.config.FoundationDbConfiguration;
-import de.h2cl.spring.data.foundationdb.repository.support.sample.Offer;
+
+import lombok.Builder;
+import lombok.Data;
 
 /**
  * IntegrationTest needs FoundationDB to be running
  */
 @RunWith(SpringRunner.class)
-@DirtiesContext
-@ContextConfiguration(classes = {FoundationDbConfiguration.class})
-@EnableFoundationDbRepositories(basePackageClasses = FoundationDbRepository.class)
+@ContextConfiguration
+@Ignore // TODO needs to be mocked
 public class FoundationDbRepositoryTest {
 
     private static final String ID = "ID_1";
 
     @Autowired
-    KeyValueOperations keyValueTemplate;
+    FoundationDbRepository<Person, String> repository;
 
     @Test
     public void simpleCrudTest() {
-        assertFalse(keyValueTemplate.findById(ID, Offer.class).isPresent());
 
-        keyValueTemplate.insert("ID_1", UUID.randomUUID());
-        // keyValueTemplate.insert(new Offer("ID_1"));
+        assertFalse(repository.findById(ID).isPresent());
+
+
+        Person person = Person.builder()
+                .id(ID)
+                .build();
+        repository.save(person);
+
+        assertThat(repository.findById(ID).isPresent(), is(TRUE));
+    }
+
+    @Configuration
+    @EnableFoundationDbRepositories(considerNestedRepositories = true)
+    static class Config {
+
+        @Bean
+        public FoundationDbDatabaseFactory foundationDbDatabaseFactory() {
+            return new FoundationDbDatabaseFactory();
+        }
+
+    }
+
+    @Data
+    @Builder
+    static class Person {
+
+        @Id
+        String id;
+        String firstname;
+        UUID uuid;
+
+    }
+
+    interface PersonRepository extends FoundationDbRepository<FoundationDbRepositoryTest.Person, String> {
+
+        List<FoundationDbRepositoryTest.Person> findByFirstname(String firstname);
     }
 }

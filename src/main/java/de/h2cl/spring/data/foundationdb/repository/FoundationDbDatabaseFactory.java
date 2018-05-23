@@ -13,9 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.h2cl.spring.data.foundationdb.repository.support.sample;
+package de.h2cl.spring.data.foundationdb.repository;
 
-import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
+import com.apple.foundationdb.Database;
+import com.apple.foundationdb.FDB;
 
-public interface OfferRepository extends FoundationDbRepository<Offer, Long> {
+/**
+ * FoundationDbDatabaseFactory
+ *
+ * @author martin.junker
+ */
+public class FoundationDbDatabaseFactory {
+
+    private static final int FOUNDATION_DB_API_VERSION = 510;
+
+    private final FDB fdb = FDB.selectAPIVersion(FOUNDATION_DB_API_VERSION);
+
+    public Database build() {
+        return fdb.open();
+    }
+
 }
