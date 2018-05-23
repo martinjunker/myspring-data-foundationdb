@@ -1,1 +1,0 @@
-org.springframework.data.repository.core.support.RepositoryFactorySupport=de.h2cl.spring.data.foundationdb.repository.support.FoundationDbRepositoryFactory
