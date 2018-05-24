@@ -18,14 +18,19 @@ package de.h2cl.spring.data.foundationdb.repository.config;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.data.config.ParsingUtils;
 import org.springframework.data.keyvalue.core.KeyValueTemplate;
 import org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension;
-import org.springframework.data.map.MapKeyValueAdapter;
 import org.springframework.data.repository.config.RepositoryConfigurationSource;
 
+import de.h2cl.spring.data.foundationdb.repository.FoundationDbDatabaseFactory;
+import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbMappingContext;
+import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbKeyValueAdapter;
+
 /**
- *
+ * @author Christoph Strobl
+ * @author Martin Junker
  */
 public class FoundationDbRepositoryConfigurationExtension extends KeyValueRepositoryConfigurationExtension {
 
@@ -67,13 +72,23 @@ public class FoundationDbRepositoryConfigurationExtension extends KeyValueReposi
     protected AbstractBeanDefinition getDefaultKeyValueTemplateBeanDefinition(
             RepositoryConfigurationSource configurationSource) {
 
-        BeanDefinitionBuilder adapterBuilder = BeanDefinitionBuilder.rootBeanDefinition(MapKeyValueAdapter.class);
-
-        BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(KeyValueTemplate.class);
-        builder
-                .addConstructorArgValue(ParsingUtils.getSourceBeanDefinition(adapterBuilder, configurationSource.getSource()));
-        builder.setRole(BeanDefinition.ROLE_SUPPORT);
-
-        return ParsingUtils.getSourceBeanDefinition(builder, configurationSource.getSource());
+        BeanDefinitionBuilder templateBuilder = BeanDefinitionBuilder.rootBeanDefinition(KeyValueTemplate.class);
+        templateBuilder
+                .addConstructorArgValue(getAdapterBeanDefinition(configurationSource))
+                .addConstructorArgValue(new RootBeanDefinition(FoundationDbMappingContext.class));
+        templateBuilder.setRole(BeanDefinition.ROLE_SUPPORT);
+        return ParsingUtils.getSourceBeanDefinition(templateBuilder, configurationSource.getSource());
     }
+
+    private AbstractBeanDefinition getAdapterBeanDefinition(RepositoryConfigurationSource configurationSource) {
+        BeanDefinitionBuilder adapterBuilder = BeanDefinitionBuilder.rootBeanDefinition(FoundationDbKeyValueAdapter.class);
+        adapterBuilder.addConstructorArgValue(getDatabaseFactoryBeanDefinition(configurationSource));
+        return ParsingUtils.getSourceBeanDefinition(adapterBuilder, configurationSource.getSource());
+    }
+
+    private AbstractBeanDefinition getDatabaseFactoryBeanDefinition(RepositoryConfigurationSource configurationSource) {
+        BeanDefinitionBuilder databaseFactoryBuilder = BeanDefinitionBuilder.rootBeanDefinition(FoundationDbDatabaseFactory.class);
+        return ParsingUtils.getSourceBeanDefinition(databaseFactoryBuilder, configurationSource.getSource());
+    }
+
 }

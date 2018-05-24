@@ -15,9 +15,9 @@
  */
 package de.h2cl.spring.data.foundationdb.repository;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.keyvalue.annotation.KeySpace;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -54,15 +55,14 @@ public class FoundationDbRepositoryTest {
     @Test
     public void simpleCrudTest() {
 
-        assertFalse(repository.findById(ID).isPresent());
-
+        assertThat("first call returns nothing", repository.findById(ID).isPresent(), is(FALSE));
 
         Person person = Person.builder()
                 .id(ID)
                 .build();
         repository.save(person);
 
-        assertThat(repository.findById(ID).isPresent(), is(TRUE));
+        assertThat("second call returns something", repository.findById(ID).isPresent(), is(TRUE));
     }
 
     @Configuration
@@ -78,6 +78,7 @@ public class FoundationDbRepositoryTest {
 
     @Data
     @Builder
+    @KeySpace("person")
     static class Person {
 
         @Id
@@ -87,8 +88,8 @@ public class FoundationDbRepositoryTest {
 
     }
 
-    interface PersonRepository extends FoundationDbRepository<FoundationDbRepositoryTest.Person, String> {
+    interface PersonRepository extends FoundationDbRepository<Person, String> {
 
-        List<FoundationDbRepositoryTest.Person> findByFirstname(String firstname);
+        List<Person> findByFirstname(String firstname);
     }
 }

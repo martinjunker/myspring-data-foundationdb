@@ -13,24 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.h2cl.spring.data.foundationdb.repository;
+package de.h2cl.spring.data.foundationdb.repository.core.mapping;
 
-import com.apple.foundationdb.Database;
-import com.apple.foundationdb.FDB;
+import org.springframework.data.keyvalue.core.mapping.KeyValuePersistentEntity;
+import org.springframework.data.mapping.PersistentEntity;
 
 /**
- * FoundationDbDatabaseFactory
+ * FoundationDB specific {@link PersistentEntity}.
  *
- * @author Martin Junker
+ * @param <T>
+ * @author Christoph Strobl
  */
-public class FoundationDbDatabaseFactory {
-
-    private static final int FOUNDATION_DB_API_VERSION = 510;
-
-    private final FDB fdb = FDB.selectAPIVersion(FOUNDATION_DB_API_VERSION);
-
-    public Database build() {
-        return fdb.open();
-    }
-
+public interface FoundationDbPersistentEntity<T> extends KeyValuePersistentEntity<T, FoundationDbPersistentProperty> {
 }

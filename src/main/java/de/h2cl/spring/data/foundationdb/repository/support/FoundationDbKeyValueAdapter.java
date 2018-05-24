@@ -26,6 +26,9 @@ import com.apple.foundationdb.Database;
 import com.apple.foundationdb.tuple.Tuple;
 
 import de.h2cl.spring.data.foundationdb.repository.FoundationDbDatabaseFactory;
+import de.h2cl.spring.data.foundationdb.repository.core.convert.FoundationDbConverter;
+import de.h2cl.spring.data.foundationdb.repository.core.convert.MappingFoundationDbConverter;
+import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbMappingContext;
 
 /**
  * {@link KeyValueAdapter} implementation for {@link com.apple.foundationdb.FDBDatabase}.
@@ -38,16 +41,16 @@ public class FoundationDbKeyValueAdapter extends AbstractKeyValueAdapter {
 
     private final Database database;
 
-    public FoundationDbKeyValueAdapter() {
-        this.database = new FoundationDbDatabaseFactory().build();
-    }
+    private final FoundationDbConverter foundationConverter;
 
-    public FoundationDbKeyValueAdapter(Database database) {
-        this.database = database;
-    }
 
     public FoundationDbKeyValueAdapter(FoundationDbDatabaseFactory databaseFactory) {
-        database = databaseFactory.build();
+        this(databaseFactory, null);
+    }
+
+    public FoundationDbKeyValueAdapter(FoundationDbDatabaseFactory databaseFactory, FoundationDbMappingContext mappingContext) {
+        this.database = databaseFactory.build();
+        foundationConverter = new MappingFoundationDbConverter(mappingContext);
     }
 
     /*
@@ -58,14 +61,14 @@ public class FoundationDbKeyValueAdapter extends AbstractKeyValueAdapter {
     public Object put(Object id, Object item, String keyspace) {
 
         Assert.notNull(id, "Cannot add item with null id.");
-        // Assert.notNull(keySpace, "Cannot add item for null collection.");
+        Assert.notNull(keyspace, "Cannot add item for null collection.");
 
         return database.run(tr -> {
-            byte[] result = tr.get(Tuple.from(id).pack()).join();
-            if(result == null) {
+            byte[] result = tr.get(Tuple.from(keyspace, id).pack()).join();
+            tr.set(Tuple.from(keyspace, id).pack(), Tuple.from(item).pack());
+            if (result == null) {
                 return null;
             }
-            tr.set(Tuple.from(id).pack(), Tuple.from(item).pack());
             return Tuple.fromBytes(result).get(0);
         });
     }
@@ -88,8 +91,8 @@ public class FoundationDbKeyValueAdapter extends AbstractKeyValueAdapter {
 
         Assert.notNull(id, "Cannot get item with null id.");
         return database.run(tr -> {
-            byte[] result = tr.get(Tuple.from(id).pack()).join();
-            if(result == null) {
+            byte[] result = tr.get(Tuple.from(keyspace, id).pack()).join();
+            if (result == null) {
                 return null;
             }
             return Tuple.fromBytes(result).get(0);
@@ -105,11 +108,11 @@ public class FoundationDbKeyValueAdapter extends AbstractKeyValueAdapter {
 
         Assert.notNull(id, "Cannot delete item with null id.");
         return database.run(tr -> {
-            byte[] result = tr.get(Tuple.from(id).pack()).join();
+            byte[] result = tr.get(Tuple.from(keyspace, id).pack()).join();
             if (result == null) {
                 return null;
             }
-            tr.clear(Tuple.from(id).pack());
+            tr.clear(Tuple.from(keyspace, id).pack());
             return Tuple.fromBytes(result).get(0);
         });
     }
@@ -130,7 +133,10 @@ public class FoundationDbKeyValueAdapter extends AbstractKeyValueAdapter {
 
     @Override
     public void deleteAllOf(String keyspace) {
-        throw new UnsupportedOperationException();
+        database.run(tr -> {
+            tr.clear(Tuple.from(keyspace).range());
+            return null;
+        });
     }
 
     @Override

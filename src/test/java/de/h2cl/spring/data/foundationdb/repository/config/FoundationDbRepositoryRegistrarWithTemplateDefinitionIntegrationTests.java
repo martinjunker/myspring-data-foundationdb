@@ -18,6 +18,7 @@ package de.h2cl.spring.data.foundationdb.repository.config;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
 
@@ -32,8 +33,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.apple.foundationdb.Database;
 
+import de.h2cl.spring.data.foundationdb.repository.FoundationDbDatabaseFactory;
 import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
-import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbKeyValueAdapter;
 
 import lombok.Data;
 
@@ -46,9 +47,17 @@ public class FoundationDbRepositoryRegistrarWithTemplateDefinitionIntegrationTes
     static class Config {
 
         @Bean
-        public FoundationDbKeyValueAdapter foundationDbKeyValueAdapter() {
-            return new FoundationDbKeyValueAdapter(mock(Database.class));
+        public FoundationDbDatabaseFactory databaseFactory(Database database) {
+            FoundationDbDatabaseFactory databaseFactory = mock(FoundationDbDatabaseFactory.class);
+            when(databaseFactory.build()).thenReturn(database);
+            return databaseFactory;
         }
+
+        @Bean
+        public Database database() {
+            return mock(Database.class);
+        }
+
 
     }
 
