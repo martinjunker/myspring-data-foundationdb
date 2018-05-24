@@ -18,6 +18,8 @@ package de.h2cl.spring.data.foundationdb.repository.core.convert;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.convert.ConversionService;
 
+import com.apple.foundationdb.tuple.Tuple;
+
 import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbMappingContext;
 
 /**
@@ -54,13 +56,14 @@ public class MappingFoundationDbConverter implements FoundationDbConverter, Init
 
     }
 
+
     @Override
-    public <R> R read(Class<R> type, Object source) {
+    public <R> R read(Class<R> type, Tuple source) {
         return null;
     }
 
     @Override
-    public void write(Object source, Object sink) {
+    public void write(Object source, Tuple sink) {
 
     }
 }

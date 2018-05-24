@@ -17,6 +17,8 @@ package de.h2cl.spring.data.foundationdb.repository.core.convert;
 
 import org.springframework.data.convert.EntityConverter;
 
+import com.apple.foundationdb.tuple.Tuple;
+
 import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbMappingContext;
 import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbPersistentEntity;
 import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbPersistentProperty;
@@ -27,7 +29,7 @@ import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbPers
  * @author Christoph Strobl
  * @author Mark Paluch
  */
-public interface FoundationDbConverter extends EntityConverter<FoundationDbPersistentEntity<?>, FoundationDbPersistentProperty, Object, Object> {
+public interface FoundationDbConverter extends EntityConverter<FoundationDbPersistentEntity<?>, FoundationDbPersistentProperty, Object, Tuple> {
 
     /*
      * (non-Javadoc)
