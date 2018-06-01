@@ -13,16 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.h2cl.spring.data.foundationdb.repository.core.mapping;
+package de.h2cl.spring.data.foundationdb.repository.query;
 
-import org.springframework.data.mapping.PersistentProperty;
+import org.springframework.data.repository.core.EntityInformation;
 
-/**
- * FoundationDB specific {@link PersistentProperty} implementation.
- *
- * @author Christoph Strobl
- */
-public interface FoundationDbPersistentProperty extends PersistentProperty<FoundationDbPersistentProperty> {
-
-
+public interface FoundationDbEntityInformation<T, ID> extends EntityInformation<T, ID> {
 }

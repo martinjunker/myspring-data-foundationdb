@@ -15,7 +15,6 @@
  */
 package de.h2cl.spring.data.foundationdb.repository;
 
-import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -23,14 +22,12 @@ import static org.junit.Assert.assertThat;
 import java.util.List;
 import java.util.UUID;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.keyvalue.annotation.KeySpace;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -44,8 +41,7 @@ import lombok.Data;
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration
-@Ignore // TODO needs to be mocked
-public class FoundationDbRepositoryTest {
+public class FoundationDbRepositoryIT {
 
     private static final String ID = "ID_1";
 
@@ -55,10 +51,11 @@ public class FoundationDbRepositoryTest {
     @Test
     public void simpleCrudTest() {
 
-        assertThat("first call returns nothing", repository.findById(ID).isPresent(), is(FALSE));
+        // assertThat("first call returns nothing", repository.findById(ID).isPresent(), is(FALSE));
 
         Person person = Person.builder()
                 .id(ID)
+                .firstname("martin")
                 .build();
         repository.save(person);
 
@@ -78,7 +75,6 @@ public class FoundationDbRepositoryTest {
 
     @Data
     @Builder
-    @KeySpace("person")
     static class Person {
 
         @Id

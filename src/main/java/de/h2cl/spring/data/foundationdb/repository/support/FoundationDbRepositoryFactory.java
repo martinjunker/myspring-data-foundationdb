@@ -15,23 +15,80 @@
  */
 package de.h2cl.spring.data.foundationdb.repository.support;
 
-import org.springframework.data.keyvalue.core.KeyValueOperations;
-import org.springframework.data.keyvalue.repository.support.KeyValueRepositoryFactory;
-import org.springframework.data.repository.query.parser.AbstractQueryCreator;
+import java.io.Serializable;
+
+import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.data.repository.core.EntityInformation;
+import org.springframework.data.repository.core.RepositoryInformation;
+import org.springframework.data.repository.core.RepositoryMetadata;
+import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 
 import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
+import de.h2cl.spring.data.foundationdb.repository.core.FoundationDbOperations;
+import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbPersistentEntity;
+import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbPersistentProperty;
+import de.h2cl.spring.data.foundationdb.repository.query.FoundationDbEntityInformation;
 
 /**
  * Factory to create {@link FoundationDbRepository} instances.
  */
-public class FoundationDbRepositoryFactory extends KeyValueRepositoryFactory {
+public class FoundationDbRepositoryFactory extends RepositoryFactorySupport {
 
 
-    public FoundationDbRepositoryFactory(KeyValueOperations keyValueOperations) {
-        super(keyValueOperations);
+    private final FoundationDbOperations operations;
+    private final MappingContext<? extends FoundationDbPersistentEntity<?>, FoundationDbPersistentProperty> mappingContext;
+
+    /**
+     * Creates a new {@link FoundationDbRepositoryFactory} with the given {@link FoundationDbOperations}.
+     *
+     * @param foundationDbOperations must not be {@literal null}.
+     */
+    public FoundationDbRepositoryFactory(FoundationDbOperations foundationDbOperations) {
+
+        Assert.notNull(foundationDbOperations, "FoundationDbOperations must not be null!");
+
+        this.operations = foundationDbOperations;
+        this.mappingContext = foundationDbOperations.getConverter().getMappingContext();
     }
 
-    public FoundationDbRepositoryFactory(KeyValueOperations keyValueOperations, Class<? extends AbstractQueryCreator<?, ?>> queryCreator) {
-        super(keyValueOperations, queryCreator);
+    /**
+     * Returns the {@link EntityInformation} for the given domain class.
+     *
+     * @param domainClass
+     * @return
+     */
+    @Override
+    public <T, ID> EntityInformation<T, ID> getEntityInformation(Class<T> domainClass) {
+        return null;
+    }
+
+    /**
+     * Create a repository instance as backing for the query proxy.
+     *
+     * @param metadata
+     * @return
+     */
+    @Override
+    protected Object getTargetRepository(RepositoryInformation metadata) {
+        FoundationDbEntityInformation<?, Serializable> entityInformation = getEntityInformation(metadata.getDomainType(), metadata);
+        return getTargetRepositoryViaReflection(metadata, entityInformation, operations);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.repository.core.support.RepositoryFactorySupport#getRepositoryBaseClass(org.springframework.data.repository.core.RepositoryMetadata)
+     */
+    @Override
+    protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
+        return SimpleFoundationDbRepository.class;
+    }
+
+    private <T, ID> FoundationDbEntityInformation<T, ID> getEntityInformation(Class<T> domainClass,
+                                                                       @Nullable RepositoryMetadata metadata) {
+        FoundationDbPersistentEntity<?> entity = mappingContext.getRequiredPersistentEntity(domainClass);
+        return FoundationDbEntityInformationSupport.entityInformationFor(entity,
+                metadata != null ? metadata.getIdType() : null);
     }
 }

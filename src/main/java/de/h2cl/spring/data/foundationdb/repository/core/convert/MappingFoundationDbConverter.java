@@ -15,12 +15,17 @@
  */
 package de.h2cl.spring.data.foundationdb.repository.core.convert;
 
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.support.DefaultConversionService;
+import org.springframework.core.convert.support.GenericConversionService;
 
 import com.apple.foundationdb.tuple.Tuple;
 
+import de.h2cl.spring.data.foundationdb.repository.core.convert.converter.ObjectToTupleConverter;
 import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbMappingContext;
+import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbPersistentEntity;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * {@link MappingFoundationDbConverter} implementation creating flat binary map structure out of a given domain type.
@@ -29,9 +34,11 @@ import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbMapp
  * @author Greg Turnquist
  * @author Mark Paluch
  */
-public class MappingFoundationDbConverter implements FoundationDbConverter, InitializingBean {
+@Slf4j
+public class MappingFoundationDbConverter implements FoundationDbConverter {
 
     private final FoundationDbMappingContext mappingContext;
+    private final GenericConversionService conversionService;
 
     /**
      * Creates new {@link MappingFoundationDbConverter}.
@@ -39,21 +46,19 @@ public class MappingFoundationDbConverter implements FoundationDbConverter, Init
      * @param mappingContext can be {@literal null}.
      */
     public MappingFoundationDbConverter(FoundationDbMappingContext mappingContext) {
-        this.mappingContext = mappingContext;
+        this.mappingContext = mappingContext != null ? mappingContext : new FoundationDbMappingContext();
+        this.conversionService = new DefaultConversionService();
+        conversionService.addConverter(new ObjectToTupleConverter());
     }
 
+    @Override
     public FoundationDbMappingContext getMappingContext() {
         return mappingContext;
     }
 
     @Override
     public ConversionService getConversionService() {
-        return null;
-    }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-
+        return conversionService;
     }
 
 
@@ -64,6 +69,11 @@ public class MappingFoundationDbConverter implements FoundationDbConverter, Init
 
     @Override
     public void write(Object source, Tuple sink) {
+
+        FoundationDbPersistentEntity<?> entity = mappingContext.getPersistentEntity(source.getClass());
+
+        sink.add(entity.getName()); // add class reference
+        sink.addAll(conversionService.convert(source, Tuple.class));
 
     }
 }

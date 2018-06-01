@@ -17,9 +17,11 @@ package de.h2cl.spring.data.foundationdb.repository.core.mapping;
 
 import static de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbSimpleTypes.FOUNDATION_SIMPLE_TYPES_HOLDER;
 
-import org.springframework.data.keyvalue.core.mapping.context.KeyValueMappingContext;
+import org.springframework.data.mapping.context.AbstractMappingContext;
 import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.data.mapping.model.Property;
 import org.springframework.data.mapping.model.SimpleTypeHolder;
+import org.springframework.data.util.TypeInformation;
 
 /**
  * FoundationDB specific {@link MappingContext}.
@@ -27,7 +29,19 @@ import org.springframework.data.mapping.model.SimpleTypeHolder;
  * @author Christoph Strobl
  * @author Oliver Gierke
  */
-public class FoundationDbMappingContext extends KeyValueMappingContext<FoundationDbPersistentEntity<?>, FoundationDbPersistentProperty> {
+public class FoundationDbMappingContext extends AbstractMappingContext<BasicFoundationDbPersistentEntity<?>, FoundationDbPersistentProperty> {
 
-    private static final SimpleTypeHolder SIMPLE_TYPE_HOLDER = FOUNDATION_SIMPLE_TYPES_HOLDER;
+    public FoundationDbMappingContext() {
+        setSimpleTypeHolder(FOUNDATION_SIMPLE_TYPES_HOLDER);
+    }
+
+    @Override
+    protected <T> BasicFoundationDbPersistentEntity<T> createPersistentEntity(TypeInformation<T> typeInformation) {
+        return new BasicFoundationDbPersistentEntity<>(typeInformation);
+    }
+
+    @Override
+    protected FoundationDbPersistentProperty createPersistentProperty(Property property, BasicFoundationDbPersistentEntity<?> owner, SimpleTypeHolder simpleTypeHolder) {
+        return new CachingFoundationDbPersistentProperty(property, owner, simpleTypeHolder);
+    }
 }

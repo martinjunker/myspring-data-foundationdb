@@ -13,16 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.h2cl.spring.data.foundationdb.repository.core.mapping;
+package de.h2cl.spring.data.foundationdb.repository.core;
 
-import org.springframework.data.mapping.PersistentProperty;
+
+import de.h2cl.spring.data.foundationdb.repository.core.convert.FoundationDbConverter;
 
 /**
- * FoundationDB specific {@link PersistentProperty} implementation.
- *
- * @author Christoph Strobl
+ * FoundationDbOperations
  */
-public interface FoundationDbPersistentProperty extends PersistentProperty<FoundationDbPersistentProperty> {
+public interface FoundationDbOperations {
 
+    <T> T findById(Object id, Class<T> javaType);
 
+    /**
+     * Returns the underlying {@link FoundationDbConverter}
+     *
+     * @return
+     */
+    FoundationDbConverter getConverter();
 }

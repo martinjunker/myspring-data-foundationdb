@@ -15,7 +15,6 @@
  */
 package de.h2cl.spring.data.foundationdb.repository.core.mapping;
 
-import org.springframework.data.keyvalue.core.mapping.KeyValuePersistentEntity;
 import org.springframework.data.mapping.PersistentEntity;
 
 /**
@@ -24,5 +23,5 @@ import org.springframework.data.mapping.PersistentEntity;
  * @param <T>
  * @author Christoph Strobl
  */
-public interface FoundationDbPersistentEntity<T> extends KeyValuePersistentEntity<T, FoundationDbPersistentProperty> {
+public interface FoundationDbPersistentEntity<T> extends PersistentEntity<T, FoundationDbPersistentProperty> {
 }

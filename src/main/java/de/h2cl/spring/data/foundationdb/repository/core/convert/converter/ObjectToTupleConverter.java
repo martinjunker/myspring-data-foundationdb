@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.h2cl.spring.data.foundationdb.repository.core.mapping;
+package de.h2cl.spring.data.foundationdb.repository.core.convert.converter;
 
-import org.springframework.data.mapping.PersistentProperty;
+import org.springframework.core.convert.converter.Converter;
+import org.springframework.util.SerializationUtils;
 
-/**
- * FoundationDB specific {@link PersistentProperty} implementation.
- *
- * @author Christoph Strobl
- */
-public interface FoundationDbPersistentProperty extends PersistentProperty<FoundationDbPersistentProperty> {
+import com.apple.foundationdb.tuple.Tuple;
 
+public class ObjectToTupleConverter implements Converter<Object, Tuple> {
 
+    @Override
+    public Tuple convert(Object source) {
+        return Tuple.fromBytes(SerializationUtils.serialize(source));
+    }
 }

@@ -15,14 +15,23 @@
  */
 package de.h2cl.spring.data.foundationdb.repository.core.mapping;
 
-import org.springframework.data.mapping.PersistentProperty;
+import org.springframework.data.mapping.model.BasicPersistentEntity;
+import org.springframework.data.util.TypeInformation;
 
 /**
- * FoundationDB specific {@link PersistentProperty} implementation.
+ * {@link FoundationDbPersistentEntity} implementation.
  *
+ * @param <T>
  * @author Christoph Strobl
+ * @author Mark Paluch
  */
-public interface FoundationDbPersistentProperty extends PersistentProperty<FoundationDbPersistentProperty> {
+public class BasicFoundationDbPersistentEntity<T> extends BasicPersistentEntity<T, FoundationDbPersistentProperty>
+        implements FoundationDbPersistentEntity<T> {
 
-
+    /**
+     * @param information must not be {@literal null}.
+     */
+    public BasicFoundationDbPersistentEntity(TypeInformation<T> information) {
+        super(information, null);
+    }
 }

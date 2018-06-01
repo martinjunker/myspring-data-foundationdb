@@ -15,29 +15,32 @@
  */
 package de.h2cl.spring.data.foundationdb.repository.config;
 
-import org.springframework.beans.factory.config.BeanDefinition;
+import java.lang.annotation.Annotation;
+import java.util.Collection;
+import java.util.Collections;
+
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
-import org.springframework.data.config.ParsingUtils;
-import org.springframework.data.keyvalue.core.KeyValueTemplate;
-import org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension;
+import org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport;
 import org.springframework.data.repository.config.RepositoryConfigurationSource;
 
-import de.h2cl.spring.data.foundationdb.repository.FoundationDbDatabaseFactory;
+import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
+import de.h2cl.spring.data.foundationdb.repository.core.mapping.Document;
 import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbMappingContext;
-import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbKeyValueAdapter;
+import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbRepositoryFactoryBean;
 
 /**
  * @author Christoph Strobl
  * @author Martin Junker
  */
-public class FoundationDbRepositoryConfigurationExtension extends KeyValueRepositoryConfigurationExtension {
+public class FoundationDbRepositoryConfigurationExtension extends RepositoryConfigurationExtensionSupport {
+
+    private static final String MAPPING_CONTEXT_BEAN_NAME = "foundationDbMappingContext";
 
     /*
      * (non-Javadoc)
-     * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
-     *                          #getModuleName()
+     * @see org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport#getModuleName()
      */
     @Override
     public String getModuleName() {
@@ -46,8 +49,7 @@ public class FoundationDbRepositoryConfigurationExtension extends KeyValueReposi
 
     /*
      * (non-Javadoc)
-     * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
-     *                          #getModulePrefix()
+     * @see org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport#getModulePrefix()
      */
     @Override
     protected String getModulePrefix() {
@@ -56,39 +58,46 @@ public class FoundationDbRepositoryConfigurationExtension extends KeyValueReposi
 
     /*
      * (non-Javadoc)
-     * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension
-     *                          #getDefaultKeyValueTemplateRef()
+     * @see org.springframework.data.repository.config.RepositoryConfigurationExtension#getRepositoryFactoryBeanClassName()
      */
-    @Override
-    protected String getDefaultKeyValueTemplateRef() {
-        return "foundationDbKeyValueTemplate";
+    public String getRepositoryFactoryBeanClassName() {
+        return FoundationDbRepositoryFactoryBean.class.getName();
     }
 
     /*
      * (non-Javadoc)
-     * @see org.springframework.data.keyvalue.repository.config.KeyValueRepositoryConfigurationExtension#getDefaultKeyValueTemplateBeanDefinition()
+     * @see org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport#getIdentifyingAnnotations()
      */
     @Override
-    protected AbstractBeanDefinition getDefaultKeyValueTemplateBeanDefinition(
-            RepositoryConfigurationSource configurationSource) {
-
-        BeanDefinitionBuilder templateBuilder = BeanDefinitionBuilder.rootBeanDefinition(KeyValueTemplate.class);
-        templateBuilder
-                .addConstructorArgValue(getAdapterBeanDefinition(configurationSource))
-                .addConstructorArgValue(new RootBeanDefinition(FoundationDbMappingContext.class));
-        templateBuilder.setRole(BeanDefinition.ROLE_SUPPORT);
-        return ParsingUtils.getSourceBeanDefinition(templateBuilder, configurationSource.getSource());
+    protected Collection<Class<? extends Annotation>> getIdentifyingAnnotations() {
+        return Collections.singleton(Document.class);
     }
 
-    private AbstractBeanDefinition getAdapterBeanDefinition(RepositoryConfigurationSource configurationSource) {
-        BeanDefinitionBuilder adapterBuilder = BeanDefinitionBuilder.rootBeanDefinition(FoundationDbKeyValueAdapter.class);
-        adapterBuilder.addConstructorArgValue(getDatabaseFactoryBeanDefinition(configurationSource));
-        return ParsingUtils.getSourceBeanDefinition(adapterBuilder, configurationSource.getSource());
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport#getIdentifyingTypes()
+     */
+    @Override
+    protected Collection<Class<?>> getIdentifyingTypes() {
+        return Collections.singleton(FoundationDbRepository.class);
     }
 
-    private AbstractBeanDefinition getDatabaseFactoryBeanDefinition(RepositoryConfigurationSource configurationSource) {
-        BeanDefinitionBuilder databaseFactoryBuilder = BeanDefinitionBuilder.rootBeanDefinition(FoundationDbDatabaseFactory.class);
-        return ParsingUtils.getSourceBeanDefinition(databaseFactoryBuilder, configurationSource.getSource());
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport#registerBeansForRoot(org.springframework.beans.factory.support.BeanDefinitionRegistry, org.springframework.data.repository.config.RepositoryConfigurationSource)
+     */
+    @Override
+    public void registerBeansForRoot(BeanDefinitionRegistry registry, RepositoryConfigurationSource configurationSource) {
+
+        super.registerBeansForRoot(registry, configurationSource);
+        if (!registry.containsBeanDefinition(MAPPING_CONTEXT_BEAN_NAME)) {
+
+            RootBeanDefinition definition = new RootBeanDefinition(FoundationDbMappingContext.class);
+            definition.setRole(AbstractBeanDefinition.ROLE_INFRASTRUCTURE);
+            definition.setSource(configurationSource.getSource());
+
+            registry.registerBeanDefinition(MAPPING_CONTEXT_BEAN_NAME, definition);
+        }
     }
 
 }

@@ -17,39 +17,34 @@ package de.h2cl.spring.data.foundationdb.repository.config;
 
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.map.repository.config.MapRepositoriesRegistrar;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import com.apple.foundationdb.Database;
 
 import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
 
 import lombok.Data;
 
 /**
- * Integration tests for {@link MapRepositoriesRegistrar} with complete defaulting.
+ * Integration tests for {@link FoundationDbRepositoriesRegistrar} with complete defaulting.
  *
  * @author Christoph Strobl
  * @author Mark Paluch
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration
-@Ignore //TODO needs to be mocked
 public class FoundationDbRepositoryRegistrarWithFullDefaultingIntegrationTests {
-
-    @Configuration
-    @EnableFoundationDbRepositories(considerNestedRepositories = true)
-    static class Config {
-
-    }
 
     @Autowired
     PersonRepository repository;
@@ -59,6 +54,19 @@ public class FoundationDbRepositoryRegistrarWithFullDefaultingIntegrationTests {
         assertThat(repository, notNullValue());
     }
 
+    interface PersonRepository extends FoundationDbRepository<Person, String> {
+
+        List<Person> findByFirstname(String firstname);
+    }
+
+    @Configuration
+    @EnableFoundationDbRepositories(considerNestedRepositories = true)
+    static class Config {
+        @Bean
+        public Database database() {
+            return mock(Database.class);
+        }
+    }
 
     @Data
     static class Person {
@@ -67,10 +75,5 @@ public class FoundationDbRepositoryRegistrarWithFullDefaultingIntegrationTests {
         String id;
         String firstname;
 
-    }
-
-    interface PersonRepository extends FoundationDbRepository<Person, String> {
-
-        List<Person> findByFirstname(String firstname);
     }
 }

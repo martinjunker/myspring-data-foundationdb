@@ -15,14 +15,22 @@
  */
 package de.h2cl.spring.data.foundationdb.repository.core.mapping;
 
-import org.springframework.data.mapping.PersistentProperty;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Inherited;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import org.springframework.data.annotation.Persistent;
 
 /**
- * FoundationDB specific {@link PersistentProperty} implementation.
+ * Identifies a domain object to be persisted to FoundationDB.
  *
- * @author Christoph Strobl
+ * @author Martin Junker
  */
-public interface FoundationDbPersistentProperty extends PersistentProperty<FoundationDbPersistentProperty> {
-
-
+@Persistent
+@Inherited
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ ElementType.TYPE })
+public @interface Document {
 }

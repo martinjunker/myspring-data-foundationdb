@@ -26,10 +26,6 @@ import java.lang.annotation.Target;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.keyvalue.core.KeyValueOperations;
-import org.springframework.data.keyvalue.repository.config.QueryCreatorType;
-import org.springframework.data.keyvalue.repository.query.CachingKeyValuePartTreeQuery;
-import org.springframework.data.keyvalue.repository.query.SpelQueryCreator;
 
 import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbRepositoryFactoryBean;
 
@@ -44,7 +40,6 @@ import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbRepositor
 @Documented
 @Inherited
 @Import(FoundationDbRepositoriesRegistrar.class)
-@QueryCreatorType(value = SpelQueryCreator.class, repositoryQueryType = CachingKeyValuePartTreeQuery.class)
 public @interface EnableFoundationDbRepositories {
 
 
@@ -103,11 +98,11 @@ public @interface EnableFoundationDbRepositories {
     Class<?> repositoryFactoryBeanClass() default FoundationDbRepositoryFactoryBean.class;
 
     /**
-     * Configures the name of the {@link KeyValueOperations} bean to be used with the repositories detected.
+     * Configures the name of the {@link FoundationDbTemplate} bean to be used with the repositories detected.
      *
      * @return
      */
-    String keyValueTemplateRef() default "foundationDbKeyValueTemplate";
+    String foundationDbTemplateRef() default "foundationDbTemplate";
 
     /**
      * Configures whether nested repository-interfaces (e.g. defined as inner classes) should be discovered by the
