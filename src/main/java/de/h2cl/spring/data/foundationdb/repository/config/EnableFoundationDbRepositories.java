@@ -27,6 +27,7 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
+import de.h2cl.spring.data.foundationdb.repository.core.FoundationDbTemplate;
 import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbRepositoryFactoryBean;
 
 /**

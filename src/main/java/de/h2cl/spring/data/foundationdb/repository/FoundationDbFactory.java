@@ -16,21 +16,8 @@
 package de.h2cl.spring.data.foundationdb.repository;
 
 import com.apple.foundationdb.Database;
-import com.apple.foundationdb.FDB;
 
-/**
- * FoundationDbDatabaseFactory
- *
- * @author Martin Junker
- */
-public class FoundationDbDatabaseFactory {
+public interface FoundationDbFactory {
 
-    private static final int FOUNDATION_DB_API_VERSION = 510;
-
-    private final FDB fdb = FDB.selectAPIVersion(FOUNDATION_DB_API_VERSION);
-
-    public Database build() {
-        return fdb.open();
-    }
-
+    Database getDb();
 }

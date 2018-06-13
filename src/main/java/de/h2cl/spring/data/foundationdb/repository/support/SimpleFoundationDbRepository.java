@@ -17,16 +17,11 @@ package de.h2cl.spring.data.foundationdb.repository.support;
 
 import java.util.Optional;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.util.Assert;
 
 import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
 import de.h2cl.spring.data.foundationdb.repository.core.FoundationDbOperations;
 import de.h2cl.spring.data.foundationdb.repository.query.FoundationDbEntityInformation;
-
-import lombok.RequiredArgsConstructor;
 
 /**
  * Repository base implementation for FoundationDb.
@@ -36,34 +31,20 @@ import lombok.RequiredArgsConstructor;
  * @author Thomas Darimont
  * @author Mark Paluch
  */
-@RequiredArgsConstructor
 public class SimpleFoundationDbRepository<T, ID> implements FoundationDbRepository<T, ID> {
 
     private final FoundationDbOperations foundationDbOperations;
     private final FoundationDbEntityInformation<T, ID> entityInformation;
 
+    public SimpleFoundationDbRepository(FoundationDbEntityInformation<T, ID> metadata, FoundationDbOperations foundationDbOperations) {
 
-    /**
-     * Returns all entities sorted by the given options.
-     *
-     * @param sort
-     * @return all entities sorted by the given options
-     */
-    @Override
-    public Iterable<T> findAll(Sort sort) {
-        return null;
+        Assert.notNull(metadata, "FoundationDbEntityInformation must not be null!");
+        Assert.notNull(foundationDbOperations, "FoundationDbOperations must not be null!");
+
+        this.foundationDbOperations = foundationDbOperations;
+        this.entityInformation = metadata;
     }
 
-    /**
-     * Returns a {@link Page} of entities meeting the paging restriction provided in the {@code Pageable} object.
-     *
-     * @param pageable
-     * @return a page of entities
-     */
-    @Override
-    public Page<T> findAll(Pageable pageable) {
-        return null;
-    }
 
     /**
      * Saves a given entity. Use the returned instance for further operations as the save operation might have changed the

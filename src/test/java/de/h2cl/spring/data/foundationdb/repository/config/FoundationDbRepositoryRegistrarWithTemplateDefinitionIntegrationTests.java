@@ -33,8 +33,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import com.apple.foundationdb.Database;
 
-import de.h2cl.spring.data.foundationdb.repository.FoundationDbDatabaseFactory;
+import de.h2cl.spring.data.foundationdb.repository.FoundationDbFactory;
 import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
+import de.h2cl.spring.data.foundationdb.repository.core.SimpleFoundationDbFactory;
 
 import lombok.Data;
 
@@ -47,9 +48,9 @@ public class FoundationDbRepositoryRegistrarWithTemplateDefinitionIntegrationTes
     static class Config {
 
         @Bean
-        public FoundationDbDatabaseFactory databaseFactory(Database database) {
-            FoundationDbDatabaseFactory databaseFactory = mock(FoundationDbDatabaseFactory.class);
-            when(databaseFactory.build()).thenReturn(database);
+        public FoundationDbFactory databaseFactory(Database database) {
+            SimpleFoundationDbFactory databaseFactory = mock(SimpleFoundationDbFactory.class);
+            when(databaseFactory.getDb()).thenReturn(database);
             return databaseFactory;
         }
 
@@ -57,7 +58,6 @@ public class FoundationDbRepositoryRegistrarWithTemplateDefinitionIntegrationTes
         public Database database() {
             return mock(Database.class);
         }
-
 
     }
 

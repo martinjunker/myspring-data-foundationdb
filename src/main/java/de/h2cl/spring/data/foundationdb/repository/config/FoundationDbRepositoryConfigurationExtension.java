@@ -20,8 +20,11 @@ import java.util.Collection;
 import java.util.Collections;
 
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
+import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource;
 import org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport;
 import org.springframework.data.repository.config.RepositoryConfigurationSource;
 
@@ -80,6 +83,18 @@ public class FoundationDbRepositoryConfigurationExtension extends RepositoryConf
     @Override
     protected Collection<Class<?>> getIdentifyingTypes() {
         return Collections.singleton(FoundationDbRepository.class);
+    }
+
+    /*
+     * (non-Javadoc)
+     * @see org.springframework.data.repository.config.RepositoryConfigurationExtensionSupport#postProcess(org.springframework.beans.factory.support.BeanDefinitionBuilder, org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource)
+     */
+    @Override
+    public void postProcess(BeanDefinitionBuilder builder, AnnotationRepositoryConfigurationSource config) {
+
+        AnnotationAttributes attributes = config.getAttributes();
+
+        builder.addPropertyReference("foundationDbOperations", attributes.getString("foundationDbTemplateRef"));
     }
 
     /*

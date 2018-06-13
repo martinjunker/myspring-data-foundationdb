@@ -32,6 +32,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import de.h2cl.spring.data.foundationdb.repository.config.EnableFoundationDbRepositories;
+import de.h2cl.spring.data.foundationdb.repository.core.FoundationDbTemplate;
+import de.h2cl.spring.data.foundationdb.repository.core.SimpleFoundationDbFactory;
+import de.h2cl.spring.data.foundationdb.repository.core.mapping.Document;
 
 import lombok.Builder;
 import lombok.Data;
@@ -67,14 +70,15 @@ public class FoundationDbRepositoryIT {
     static class Config {
 
         @Bean
-        public FoundationDbDatabaseFactory foundationDbDatabaseFactory() {
-            return new FoundationDbDatabaseFactory();
+        public FoundationDbTemplate foundationDbTemplate() {
+            return new FoundationDbTemplate(new SimpleFoundationDbFactory());
         }
 
     }
 
     @Data
     @Builder
+    @Document
     static class Person {
 
         @Id
@@ -86,6 +90,6 @@ public class FoundationDbRepositoryIT {
 
     interface PersonRepository extends FoundationDbRepository<Person, String> {
 
-        List<Person> findByFirstname(String firstname);
+        //List<Person> findByFirstname(String firstname);
     }
 }

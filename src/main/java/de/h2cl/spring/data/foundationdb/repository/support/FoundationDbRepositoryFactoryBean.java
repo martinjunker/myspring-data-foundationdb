@@ -51,6 +51,14 @@ public class FoundationDbRepositoryFactoryBean<T extends Repository<S, ID>, S, I
         return new FoundationDbRepositoryFactory(operations);
     }
 
+    /**
+     * Configures the {@link FoundationDbOperations} to be used.
+     *
+     * @param operations the operations to set
+     */
+    public void setFoundationDbOperations(FoundationDbOperations operations) {
+        this.operations = operations;
+    }
 }
 
 

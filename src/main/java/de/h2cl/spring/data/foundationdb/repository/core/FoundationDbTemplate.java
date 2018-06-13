@@ -15,21 +15,45 @@
  */
 package de.h2cl.spring.data.foundationdb.repository.core;
 
-import org.springframework.data.mapping.context.MappingContext;
+import java.util.Collections;
 
-import de.h2cl.spring.data.foundationdb.repository.FoundationDbDatabaseFactory;
+import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.lang.Nullable;
+
+import de.h2cl.spring.data.foundationdb.repository.FoundationDbFactory;
 import de.h2cl.spring.data.foundationdb.repository.core.convert.FoundationDbConverter;
+import de.h2cl.spring.data.foundationdb.repository.core.convert.FoundationDbCustomConversions;
+import de.h2cl.spring.data.foundationdb.repository.core.convert.MappingFoundationDbConverter;
+import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbMappingContext;
 import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbPersistentEntity;
 import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbPersistentProperty;
 
-import lombok.RequiredArgsConstructor;
-
-@RequiredArgsConstructor
+/**
+ * FoundationDbTemplate
+ *
+ * @author Martin Junker
+ */
 public class FoundationDbTemplate implements FoundationDbOperations {
 
+    private final FoundationDbFactory foundationDbFactory;
     private final FoundationDbConverter foundationDbConverter;
     private final MappingContext<? extends FoundationDbPersistentEntity<?>, FoundationDbPersistentProperty> mappingContext;
-    private final FoundationDbDatabaseFactory foundationDbDatabaseFactory;
+
+    public FoundationDbTemplate(FoundationDbFactory foundationDbFactory) {
+        this(foundationDbFactory, null);
+    }
+
+    public FoundationDbTemplate(FoundationDbFactory foundationDbFactory, @Nullable FoundationDbConverter foundationDbConverter) {
+        this(foundationDbFactory, foundationDbConverter, null);
+
+    }
+
+    public FoundationDbTemplate(FoundationDbFactory foundationDbFactory, @Nullable FoundationDbConverter foundationDbConverter, @Nullable FoundationDbMappingContext foundationDbMappingContext) {
+        this.foundationDbFactory = foundationDbFactory;
+        this.foundationDbConverter = foundationDbConverter == null ? getDefaultFoundationDbConverter() : foundationDbConverter;
+        this.mappingContext = foundationDbMappingContext == null ? this.foundationDbConverter.getMappingContext() : foundationDbMappingContext;
+    }
+
 
     @Override
     public <T> T findById(Object id, Class<T> javaType) {
@@ -44,5 +68,16 @@ public class FoundationDbTemplate implements FoundationDbOperations {
     @Override
     public FoundationDbConverter getConverter() {
         return this.foundationDbConverter;
+    }
+
+    private static FoundationDbConverter getDefaultFoundationDbConverter() {
+
+        FoundationDbCustomConversions conversions = new FoundationDbCustomConversions(Collections.emptyList());
+
+        FoundationDbMappingContext mappingContext = new FoundationDbMappingContext();
+        mappingContext.setSimpleTypeHolder(conversions.getSimpleTypeHolder());
+        mappingContext.afterPropertiesSet();
+        return new MappingFoundationDbConverter(mappingContext);
+
     }
 }

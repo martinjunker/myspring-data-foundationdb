@@ -51,7 +51,7 @@ public class CachingFoundationDbPersistentProperty extends BasicFoundationDbPers
 
     /*
      * (non-Javadoc)
-     * @see org.springframework.data.mongodb.core.mapping.BasicMongoPersistentProperty#isIdProperty()
+     * @see      * @see org.springframework.data.mongodb.core.mapping.BasicMongoPersistentProperty#isAssociation()
      */
     @Override
     public boolean isIdProperty() {
@@ -65,7 +65,7 @@ public class CachingFoundationDbPersistentProperty extends BasicFoundationDbPers
 
     /*
      * (non-Javadoc)
-     * @see org.springframework.data.mongodb.core.mapping.BasicMongoPersistentProperty#isAssociation()
+     * @see org.springframework.data.mapping.model.AnnotationBasedPersistentProperty.isAssociation
      */
     @Override
     public boolean isAssociation() {

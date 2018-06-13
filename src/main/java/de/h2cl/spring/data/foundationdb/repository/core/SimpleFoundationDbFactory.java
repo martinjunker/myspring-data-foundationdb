@@ -13,14 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.h2cl.spring.data.foundationdb.repository;
+package de.h2cl.spring.data.foundationdb.repository.core;
 
-import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.NoRepositoryBean;
+import com.apple.foundationdb.Database;
+import com.apple.foundationdb.FDB;
+
+import de.h2cl.spring.data.foundationdb.repository.FoundationDbFactory;
 
 /**
- * Subtype {@link org.springframework.stereotype.Repository @Repository} for FoundationDb usage.
+ * SimpleFoundationDbFactory
+ *
+ * @author Martin Junker
  */
-@NoRepositoryBean
-public interface FoundationDbRepository<T, ID> extends CrudRepository<T, ID> {
+public class SimpleFoundationDbFactory implements FoundationDbFactory {
+
+    private static final int FOUNDATION_DB_API_VERSION = 510;
+
+    private final FDB fdb = FDB.selectAPIVersion(FOUNDATION_DB_API_VERSION);
+
+    @Override
+    public Database getDb() {
+        return fdb.open();
+    }
 }
