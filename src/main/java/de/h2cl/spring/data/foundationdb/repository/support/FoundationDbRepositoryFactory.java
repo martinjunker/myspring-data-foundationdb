@@ -15,21 +15,27 @@
  */
 package de.h2cl.spring.data.foundationdb.repository.support;
 
-import java.io.Serializable;
-
-import org.springframework.data.mapping.context.MappingContext;
-import org.springframework.data.repository.core.EntityInformation;
-import org.springframework.data.repository.core.RepositoryInformation;
-import org.springframework.data.repository.core.RepositoryMetadata;
-import org.springframework.data.repository.core.support.RepositoryFactorySupport;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-
 import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
 import de.h2cl.spring.data.foundationdb.repository.core.FoundationDbOperations;
 import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbPersistentEntity;
 import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbPersistentProperty;
 import de.h2cl.spring.data.foundationdb.repository.query.FoundationDbEntityInformation;
+import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.data.repository.core.EntityInformation;
+import org.springframework.data.repository.core.NamedQueries;
+import org.springframework.data.repository.core.RepositoryInformation;
+import org.springframework.data.repository.core.RepositoryMetadata;
+import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+import org.springframework.data.repository.query.EvaluationContextProvider;
+import org.springframework.data.repository.query.QueryLookupStrategy;
+import org.springframework.data.repository.query.RepositoryQuery;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
+import java.util.Optional;
 
 /**
  * Factory to create {@link FoundationDbRepository} instances.
@@ -78,6 +84,15 @@ public class FoundationDbRepositoryFactory extends RepositoryFactorySupport {
 
     /*
      * (non-Javadoc)
+     * @see org.springframework.data.repository.core.support.RepositoryFactorySupport#getQueryLookupStrategy(org.springframework.data.repository.query.QueryLookupStrategy.Key, org.springframework.data.repository.query.EvaluationContextProvider)
+     */
+    @Override
+    protected Optional<QueryLookupStrategy> getQueryLookupStrategy(@Nullable QueryLookupStrategy.Key key, EvaluationContextProvider evaluationContextProvider) {
+        return Optional.of(new FoundationDbQueryLookupStrategy(operations, mappingContext));
+    }
+
+    /*
+     * (non-Javadoc)
      * @see org.springframework.data.repository.core.support.RepositoryFactorySupport#getRepositoryBaseClass(org.springframework.data.repository.core.RepositoryMetadata)
      */
     @Override
@@ -86,9 +101,37 @@ public class FoundationDbRepositoryFactory extends RepositoryFactorySupport {
     }
 
     private <T, ID> FoundationDbEntityInformation<T, ID> getEntityInformation(Class<T> domainClass,
-                                                                       @Nullable RepositoryMetadata metadata) {
+                                                                              @Nullable RepositoryMetadata metadata) {
         FoundationDbPersistentEntity<?> entity = mappingContext.getRequiredPersistentEntity(domainClass);
         return FoundationDbEntityInformationSupport.entityInformationFor(entity,
                 metadata != null ? metadata.getIdType() : null);
+    }
+
+    /**
+     * {@link QueryLookupStrategy} to create {@link org.springframework.data.repository.query.parser.PartTree} instances.
+     *
+     * @author Oliver Gierke
+     * @author Thomas Darimont
+     */
+    private static class FoundationDbQueryLookupStrategy implements QueryLookupStrategy {
+
+        private final FoundationDbOperations operations;
+        MappingContext<? extends FoundationDbPersistentEntity<?>, FoundationDbPersistentProperty> mappingContext;
+
+        public FoundationDbQueryLookupStrategy(FoundationDbOperations operations,
+                                               MappingContext<? extends FoundationDbPersistentEntity<?>, FoundationDbPersistentProperty> mappingContext) {
+            this.operations = operations;
+            this.mappingContext = mappingContext;
+        }
+
+        /*
+         * (non-Javadoc)
+         * @see org.springframework.data.repository.query.QueryLookupStrategy#resolveQuery(java.lang.reflect.Method, org.springframework.data.repository.core.RepositoryMetadata, org.springframework.data.projection.ProjectionFactory, org.springframework.data.repository.core.NamedQueries)
+         */
+        @Override
+        public RepositoryQuery resolveQuery(Method method, RepositoryMetadata metadata, ProjectionFactory factory, NamedQueries namedQueries) {
+            FoundationDbQueryMethod queryMethod = new FoundationDbQueryMethod(method, metadata, factory, mappingContext);
+            return new PartTreeFoundationDbQuery(queryMethod, operations);
+        }
     }
 }

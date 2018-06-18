@@ -64,7 +64,7 @@
 
         <!-- FoundationDB -->
         <dependency>
-            <groupId>com.apple.cie.foundationdb</groupId>
+            <groupId>org.apple.cie.foundationdb</groupId>
             <artifactId>fdb-java</artifactId>
             <version>${fdb.version}</version>
         </dependency>

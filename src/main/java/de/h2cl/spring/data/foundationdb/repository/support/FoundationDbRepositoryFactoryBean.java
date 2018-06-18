@@ -16,15 +16,16 @@
 package de.h2cl.spring.data.foundationdb.repository.support;
 
 
-import java.io.Serializable;
-
+import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
+import de.h2cl.spring.data.foundationdb.repository.core.FoundationDbOperations;
+import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
 import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 
-import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
-import de.h2cl.spring.data.foundationdb.repository.core.FoundationDbOperations;
+import java.io.Serializable;
 
 /**
  * {@link org.springframework.beans.factory.FactoryBean} to create {@link FoundationDbRepository} instances.
@@ -36,6 +37,8 @@ public class FoundationDbRepositoryFactoryBean<T extends Repository<S, ID>, S, I
 
     private @Nullable
     FoundationDbOperations operations;
+
+    private boolean mappingContextConfigured = false;
 
     /**
      * Creates a new {@link FoundationDbRepositoryFactoryBean} for the given repository interface.
@@ -58,6 +61,36 @@ public class FoundationDbRepositoryFactoryBean<T extends Repository<S, ID>, S, I
      */
     public void setFoundationDbOperations(FoundationDbOperations operations) {
         this.operations = operations;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport#setMappingContext(org.springframework.data.mapping.context.MappingContext)
+     */
+    @Override
+    protected void setMappingContext(MappingContext<?, ?> mappingContext) {
+
+        super.setMappingContext(mappingContext);
+        this.mappingContextConfigured = true;
+    }
+
+    /*
+     * (non-Javadoc)
+     *
+     * @see
+     * org.springframework.data.repository.support.RepositoryFactoryBeanSupport
+     * #afterPropertiesSet()
+     */
+    @Override
+    public void afterPropertiesSet() {
+
+        super.afterPropertiesSet();
+        Assert.state(operations != null, "FoundationDbOperations must not be null!");
+
+        if (!mappingContextConfigured) {
+            setMappingContext(operations.getConverter().getMappingContext());
+        }
     }
 }
 

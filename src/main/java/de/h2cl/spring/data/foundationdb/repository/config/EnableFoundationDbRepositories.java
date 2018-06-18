@@ -16,19 +16,14 @@
 package de.h2cl.spring.data.foundationdb.repository.config;
 
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
+import de.h2cl.spring.data.foundationdb.repository.core.FoundationDbTemplate;
+import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbRepositoryFactoryBean;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.repository.query.QueryLookupStrategy;
 
-import de.h2cl.spring.data.foundationdb.repository.core.FoundationDbTemplate;
-import de.h2cl.spring.data.foundationdb.repository.support.FoundationDbRepositoryFactoryBean;
+import java.lang.annotation.*;
 
 /**
  * Annotation to activate FoundationDb repositories. If no base package is configured through either {@link #value()},
@@ -89,6 +84,14 @@ public @interface EnableFoundationDbRepositories {
      * @return
      */
     String namedQueriesLocation() default "";
+
+    /**
+     * Returns the key of the {@link QueryLookupStrategy} to be used for lookup queries for query methods. Defaults to
+     * {@link QueryLookupStrategy.Key#CREATE_IF_NOT_FOUND}.
+     *
+     * @return
+     */
+    QueryLookupStrategy.Key queryLookupStrategy() default QueryLookupStrategy.Key.CREATE_IF_NOT_FOUND;
 
     /**
      * Returns the {@link FactoryBean} class to be used for each repository instance. Defaults to
