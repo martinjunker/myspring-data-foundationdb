@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.List;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ import de.h2cl.spring.data.foundationdb.repository.core.SimpleFoundationDbFactor
 
 import lombok.Data;
 
+@Ignore // TODO
 @RunWith(SpringRunner.class)
 @ContextConfiguration
 public class FoundationDbRepositoryRegistrarWithTemplateDefinitionIntegrationTests {

@@ -20,6 +20,8 @@ import de.h2cl.spring.data.foundationdb.repository.core.FoundationDbOperations;
 import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbPersistentEntity;
 import de.h2cl.spring.data.foundationdb.repository.core.mapping.FoundationDbPersistentProperty;
 import de.h2cl.spring.data.foundationdb.repository.query.FoundationDbEntityInformation;
+import de.h2cl.spring.data.foundationdb.repository.query.FoundationDbQueryMethod;
+import de.h2cl.spring.data.foundationdb.repository.query.PartTreeFoundationDbQuery;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.EntityInformation;
