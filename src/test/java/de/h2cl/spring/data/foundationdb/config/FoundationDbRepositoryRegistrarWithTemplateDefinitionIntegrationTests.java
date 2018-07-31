@@ -13,14 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.h2cl.spring.data.foundationdb.repository;
+package de.h2cl.spring.data.foundationdb.config;
 
-import de.h2cl.spring.data.foundationdb.config.EnableFoundationDbRepositories;
-import de.h2cl.spring.data.foundationdb.core.FoundationDbTemplate;
-import de.h2cl.spring.data.foundationdb.core.SimpleFoundationDbFactory;
-import de.h2cl.spring.data.foundationdb.core.mapping.Document;
-import lombok.Builder;
-import lombok.Data;
+import static org.hamcrest.core.IsNull.notNullValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,64 +32,57 @@ import org.springframework.data.annotation.Id;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.UUID;
+import com.apple.foundationdb.Database;
 
-import static java.lang.Boolean.TRUE;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
+import de.h2cl.spring.data.foundationdb.FoundationDbFactory;
+import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
+import de.h2cl.spring.data.foundationdb.core.SimpleFoundationDbFactory;
 
-/**
- * IntegrationTest needs FoundationDB to be running
- */
+import lombok.Data;
+
 @Ignore // TODO
 @RunWith(SpringRunner.class)
 @ContextConfiguration
-public class FoundationDbRepositoryIT {
-
-    private static final String ID = "ID_1";
-
-    @Autowired
-    FoundationDbRepository<Person, String> repository;
-
-    @Test
-    public void simpleCrudTest() {
-
-        // assertThat("first call returns nothing", repository.findById(ID).isPresent(), is(FALSE));
-
-        Person person = Person.builder()
-                .id(ID)
-                .firstname("martin")
-                .build();
-        repository.save(person);
-
-        assertThat("second call returns something", repository.findById(ID).isPresent(), is(TRUE));
-    }
+public class FoundationDbRepositoryRegistrarWithTemplateDefinitionIntegrationTests {
 
     @Configuration
     @EnableFoundationDbRepositories(considerNestedRepositories = true)
     static class Config {
 
         @Bean
-        public FoundationDbTemplate foundationDbTemplate() {
-            return new FoundationDbTemplate(new SimpleFoundationDbFactory());
+        public FoundationDbFactory databaseFactory(Database database) {
+            SimpleFoundationDbFactory databaseFactory = mock(SimpleFoundationDbFactory.class);
+            when(databaseFactory.getDb()).thenReturn(database);
+            return databaseFactory;
+        }
+
+        @Bean
+        public Database database() {
+            return mock(Database.class);
         }
 
     }
 
+    @Autowired
+    PersonRepository repository;
+
+    @Test
+    public void shouldEnableFoundationDbRepositoryCorrectly() {
+        assertThat(repository, notNullValue());
+    }
+
+
     @Data
-    @Builder
-    @Document
     static class Person {
 
         @Id
         String id;
         String firstname;
-        UUID uuid;
 
     }
 
     interface PersonRepository extends FoundationDbRepository<Person, String> {
 
-        //List<Person> findByFirstname(String firstname);
+        List<Person> findByFirstname(String firstname);
     }
 }
