@@ -15,13 +15,13 @@
  */
 package de.h2cl.spring.data.foundationdb.support;
 
-import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
 import de.h2cl.spring.data.foundationdb.core.FoundationDbOperations;
 import de.h2cl.spring.data.foundationdb.core.mapping.FoundationDbPersistentEntity;
 import de.h2cl.spring.data.foundationdb.core.mapping.FoundationDbPersistentProperty;
 import de.h2cl.spring.data.foundationdb.query.FoundationDbEntityInformation;
 import de.h2cl.spring.data.foundationdb.query.FoundationDbQueryMethod;
 import de.h2cl.spring.data.foundationdb.query.PartTreeFoundationDbQuery;
+import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.data.projection.ProjectionFactory;
 import org.springframework.data.repository.core.EntityInformation;
@@ -29,7 +29,6 @@ import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
-import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.lang.Nullable;
@@ -37,7 +36,6 @@ import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
-import java.util.Optional;
 
 /**
  * Factory to create {@link FoundationDbRepository} instances.
@@ -84,14 +82,6 @@ public class FoundationDbRepositoryFactory extends RepositoryFactorySupport {
         return getTargetRepositoryViaReflection(metadata, entityInformation, operations);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.repository.core.support.RepositoryFactorySupport#getQueryLookupStrategy(org.springframework.data.repository.query.QueryLookupStrategy.Key, org.springframework.data.repository.query.EvaluationContextProvider)
-     */
-    @Override
-    protected Optional<QueryLookupStrategy> getQueryLookupStrategy(@Nullable QueryLookupStrategy.Key key, EvaluationContextProvider evaluationContextProvider) {
-        return Optional.of(new FoundationDbQueryLookupStrategy(operations, mappingContext));
-    }
 
     /*
      * (non-Javadoc)
