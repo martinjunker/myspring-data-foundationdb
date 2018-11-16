@@ -15,12 +15,16 @@
  */
 package de.h2cl.spring.data.foundationdb.support;
 
-import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
 import de.h2cl.spring.data.foundationdb.core.FoundationDbOperations;
 import de.h2cl.spring.data.foundationdb.query.FoundationDbEntityInformation;
+import de.h2cl.spring.data.foundationdb.repository.FoundationDbRepository;
+import org.springframework.data.util.Streamable;
 import org.springframework.util.Assert;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Repository base implementation for FoundationDb.
@@ -29,6 +33,7 @@ import java.util.Optional;
  * @author Christoph Strobl
  * @author Thomas Darimont
  * @author Mark Paluch
+ * @author Martin Junker
  */
 public class SimpleFoundationDbRepository<T, ID> implements FoundationDbRepository<T, ID> {
 
@@ -73,7 +78,19 @@ public class SimpleFoundationDbRepository<T, ID> implements FoundationDbReposito
      */
     @Override
     public <S extends T> Iterable<S> saveAll(Iterable<S> entities) {
-        return null;
+
+        Assert.notNull(entities, "The given Iterable of entities not be null!");
+
+        Streamable<S> source = Streamable.of(entities);
+        boolean allNew = source.stream().allMatch(entityInformation::isNew);
+
+        if (allNew) {
+
+            List<S> result = source.stream().collect(Collectors.toList());
+            return new ArrayList<>(foundationDbOperations.insert(result, entityInformation.getSubspaceName()));
+        }
+
+        return source.stream().map(this::save).collect(Collectors.toList());
     }
 
     /**
@@ -101,7 +118,10 @@ public class SimpleFoundationDbRepository<T, ID> implements FoundationDbReposito
      */
     @Override
     public boolean existsById(ID id) {
-        return false;
+
+        Assert.notNull(id, "The given id must not be null!");
+
+        return findById(id).isPresent();
     }
 
     /**
@@ -111,7 +131,7 @@ public class SimpleFoundationDbRepository<T, ID> implements FoundationDbReposito
      */
     @Override
     public Iterable<T> findAll() {
-        return null;
+        return null; // TODO implement
     }
 
     /**
@@ -122,7 +142,7 @@ public class SimpleFoundationDbRepository<T, ID> implements FoundationDbReposito
      */
     @Override
     public Iterable<T> findAllById(Iterable<ID> ids) {
-        return null;
+        return null; // TODO implement
     }
 
     /**
@@ -132,7 +152,7 @@ public class SimpleFoundationDbRepository<T, ID> implements FoundationDbReposito
      */
     @Override
     public long count() {
-        return 0;
+        return 0; // TODO implement
     }
 
     /**
@@ -143,7 +163,7 @@ public class SimpleFoundationDbRepository<T, ID> implements FoundationDbReposito
      */
     @Override
     public void deleteById(ID id) {
-
+// TODO implement
     }
 
     /**
@@ -154,7 +174,7 @@ public class SimpleFoundationDbRepository<T, ID> implements FoundationDbReposito
      */
     @Override
     public void delete(T entity) {
-
+// TODO implement
     }
 
     /**
@@ -165,7 +185,7 @@ public class SimpleFoundationDbRepository<T, ID> implements FoundationDbReposito
      */
     @Override
     public void deleteAll(Iterable<? extends T> entities) {
-
+// TODO implement
     }
 
     /**
@@ -173,6 +193,6 @@ public class SimpleFoundationDbRepository<T, ID> implements FoundationDbReposito
      */
     @Override
     public void deleteAll() {
-
+// TODO implement
     }
 }

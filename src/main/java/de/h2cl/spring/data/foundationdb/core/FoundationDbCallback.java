@@ -15,34 +15,26 @@
  */
 package de.h2cl.spring.data.foundationdb.core;
 
-
-import de.h2cl.spring.data.foundationdb.core.convert.FoundationDbConverter;
 import org.springframework.lang.Nullable;
 
 /**
- * FoundationDbOperations
+ * Generic callback interface for code that operates on a {@link FoundationDbAdapter}. This is particularly useful for
+ * delegating code that needs to work closely on the underlying FoundationDb implementation.
+ *
+ * @param <T>
+ * @author Christoph Strobl
+ * @author Mark Paluch
  */
-public interface FoundationDbOperations {
-
-    <T> T findById(Object id, Class<T> javaType);
-
-    <T> T insert(T entity, String subspaceName);
-
-    <T> T save(T entity, String subspaceName);
+public interface FoundationDbCallback<T> {
 
     /**
-     * Execute operation against underlying db.
+     * Gets called by {@code FoundationDbTemplate#execute(FoundationDbCallback)}. Allows for returning a result object created
+     * within the callback, i.e. a domain object or a collection of domain objects.
      *
-     * @param action must not be {@literal null}.
+     * @param adapter
      * @return
      */
     @Nullable
-    <T> T execute(FoundationDbCallback<T> action);
+    T doInFoundationDb(FoundationDbAdapter adapter);
 
-    /**
-     * Returns the underlying {@link FoundationDbConverter}
-     *
-     * @return
-     */
-    FoundationDbConverter getConverter();
 }

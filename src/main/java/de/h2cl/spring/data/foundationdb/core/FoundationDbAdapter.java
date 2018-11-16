@@ -15,34 +15,26 @@
  */
 package de.h2cl.spring.data.foundationdb.core;
 
-
-import de.h2cl.spring.data.foundationdb.core.convert.FoundationDbConverter;
-import org.springframework.lang.Nullable;
+import com.apple.foundationdb.Database;
+import org.springframework.beans.factory.DisposableBean;
 
 /**
- * FoundationDbOperations
+ * {@link FoundationDbAdapter} unifies access and shields the underlying foundationDb specific implementation.
  */
-public interface FoundationDbOperations {
+public class FoundationDbAdapter implements DisposableBean {
 
-    <T> T findById(Object id, Class<T> javaType);
+    private final Database db;
 
-    <T> T insert(T entity, String subspaceName);
+    public FoundationDbAdapter(Database db) {
+        this.db = db;
+    }
 
-    <T> T save(T entity, String subspaceName);
+    @Override
+    public void destroy() throws Exception {
+        db.close();
+    }
 
-    /**
-     * Execute operation against underlying db.
-     *
-     * @param action must not be {@literal null}.
-     * @return
-     */
-    @Nullable
-    <T> T execute(FoundationDbCallback<T> action);
-
-    /**
-     * Returns the underlying {@link FoundationDbConverter}
-     *
-     * @return
-     */
-    FoundationDbConverter getConverter();
+    public <T> void put(T entity, String subspaceName) {
+        // TODO
+    }
 }

@@ -22,21 +22,31 @@ import de.h2cl.spring.data.foundationdb.core.convert.MappingFoundationDbConverte
 import de.h2cl.spring.data.foundationdb.core.mapping.FoundationDbMappingContext;
 import de.h2cl.spring.data.foundationdb.core.mapping.FoundationDbPersistentEntity;
 import de.h2cl.spring.data.foundationdb.core.mapping.FoundationDbPersistentProperty;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.support.PersistenceExceptionTranslator;
 import org.springframework.data.mapping.context.MappingContext;
 import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
 
 import java.util.Collections;
 
 /**
  * FoundationDbTemplate
  *
+ * @author Christoph Strobl
+ * @author Oliver Gierke
+ * @author Thomas Darimont
+ * @author Mark Paluch
  * @author Martin Junker
  */
 public class FoundationDbTemplate implements FoundationDbOperations {
 
-    private final FoundationDbFactory foundationDbFactory;
+    private static final PersistenceExceptionTranslator DEFAULT_PERSISTENCE_EXCEPTION_TRANSLATOR = new FoundationDbPersistenceExceptionTranslator();
+
     private final FoundationDbConverter foundationDbConverter;
     private final MappingContext<? extends FoundationDbPersistentEntity<?>, FoundationDbPersistentProperty> mappingContext;
+    private final FoundationDbAdapter adapter;
+    private final PersistenceExceptionTranslator exceptionTranslator = DEFAULT_PERSISTENCE_EXCEPTION_TRANSLATOR;
 
     public FoundationDbTemplate(FoundationDbFactory foundationDbFactory) {
         this(foundationDbFactory, null);
@@ -48,25 +58,53 @@ public class FoundationDbTemplate implements FoundationDbOperations {
     }
 
     public FoundationDbTemplate(FoundationDbFactory foundationDbFactory, @Nullable FoundationDbConverter foundationDbConverter, @Nullable FoundationDbMappingContext foundationDbMappingContext) {
-        this.foundationDbFactory = foundationDbFactory;
         this.foundationDbConverter = foundationDbConverter == null ? getDefaultFoundationDbConverter() : foundationDbConverter;
         this.mappingContext = foundationDbMappingContext == null ? this.foundationDbConverter.getMappingContext() : foundationDbMappingContext;
+        this.adapter = new FoundationDbAdapter(foundationDbFactory.getDb());
     }
 
 
     @Override
     public <T> T findById(Object id, Class<T> javaType) {
-        return null;
+        return null;// TODO implement
     }
 
     @Override
     public <T> T insert(T entity, String subspaceName) {
-        return null;
+        return null; // TODO implement
     }
 
     @Override
     public <T> T save(T entity, String subspaceName) {
-        return null;
+
+        Assert.notNull(entity, "Object to be saved must not be null!");
+        Assert.notNull(subspaceName, "subspaceName of object to be saved must not be null");
+
+        execute((FoundationDbCallback<Void>) adapter -> {
+
+            adapter.put(entity, subspaceName);
+            return null;
+        });
+
+        return entity;
+    }
+
+    /**
+     * @param action must not be {@literal null}.
+     * @param <T>
+     * @return
+     */
+    @Nullable
+    @Override
+    public <T> T execute(FoundationDbCallback<T> action) {
+
+        Assert.notNull(action, "FoundationDbCallback must not be null!");
+
+        try {
+            return action.doInFoundationDb(this.adapter);
+        } catch (RuntimeException e) {
+            throw resolveExceptionIfPossible(e);
+        }
     }
 
     /**
@@ -88,5 +126,11 @@ public class FoundationDbTemplate implements FoundationDbOperations {
         mappingContext.afterPropertiesSet();
         return new MappingFoundationDbConverter(mappingContext);
 
+    }
+
+    private RuntimeException resolveExceptionIfPossible(RuntimeException e) {
+
+        DataAccessException translatedException = exceptionTranslator.translateExceptionIfPossible(e);
+        return translatedException != null ? translatedException : e;
     }
 }
