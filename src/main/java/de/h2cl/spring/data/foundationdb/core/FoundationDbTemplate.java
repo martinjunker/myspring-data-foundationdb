@@ -15,6 +15,7 @@
  */
 package de.h2cl.spring.data.foundationdb.core;
 
+import com.apple.foundationdb.tuple.Tuple;
 import de.h2cl.spring.data.foundationdb.FoundationDbFactory;
 import de.h2cl.spring.data.foundationdb.core.convert.FoundationDbConverter;
 import de.h2cl.spring.data.foundationdb.core.convert.FoundationDbCustomConversions;
@@ -43,10 +44,12 @@ public class FoundationDbTemplate implements FoundationDbOperations {
 
     private static final PersistenceExceptionTranslator DEFAULT_PERSISTENCE_EXCEPTION_TRANSLATOR = new FoundationDbPersistenceExceptionTranslator();
 
+    private final PersistenceExceptionTranslator exceptionTranslator = DEFAULT_PERSISTENCE_EXCEPTION_TRANSLATOR;
+
     private final FoundationDbConverter foundationDbConverter;
     private final MappingContext<? extends FoundationDbPersistentEntity<?>, FoundationDbPersistentProperty> mappingContext;
     private final FoundationDbAdapter adapter;
-    private final PersistenceExceptionTranslator exceptionTranslator = DEFAULT_PERSISTENCE_EXCEPTION_TRANSLATOR;
+    private final EntityOperations operations;
 
     public FoundationDbTemplate(FoundationDbFactory foundationDbFactory) {
         this(foundationDbFactory, null);
@@ -61,6 +64,7 @@ public class FoundationDbTemplate implements FoundationDbOperations {
         this.foundationDbConverter = foundationDbConverter == null ? getDefaultFoundationDbConverter() : foundationDbConverter;
         this.mappingContext = foundationDbMappingContext == null ? this.foundationDbConverter.getMappingContext() : foundationDbMappingContext;
         this.adapter = new FoundationDbAdapter(foundationDbFactory.getDb());
+        this.operations = new EntityOperations(this.foundationDbConverter.getMappingContext());
     }
 
 
@@ -80,13 +84,27 @@ public class FoundationDbTemplate implements FoundationDbOperations {
         Assert.notNull(entity, "Object to be saved must not be null!");
         Assert.notNull(subspaceName, "subspaceName of object to be saved must not be null");
 
+        // wie wird aus der Entity etwas das ich speichern kann und hin und her mappen
+        // foundationDbConverter.write(entity, new Tuple());
+
+        Tuple key = generateKey(entity);
+        Tuple value = generateValue(entity);
+
         execute((FoundationDbCallback<Void>) adapter -> {
 
-            adapter.put(entity, subspaceName);
+            adapter.put(subspaceName, key, value);
             return null;
         });
 
         return entity;
+    }
+
+    private <T> Tuple generateValue(T entity) {
+        return null; // TODO
+    }
+
+    private <T> Tuple generateKey(T entity) {
+        return null; // TODO
     }
 
     /**

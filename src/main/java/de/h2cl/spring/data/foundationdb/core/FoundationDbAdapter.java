@@ -16,6 +16,9 @@
 package de.h2cl.spring.data.foundationdb.core;
 
 import com.apple.foundationdb.Database;
+import com.apple.foundationdb.Transaction;
+import com.apple.foundationdb.subspace.Subspace;
+import com.apple.foundationdb.tuple.Tuple;
 import org.springframework.beans.factory.DisposableBean;
 
 /**
@@ -34,7 +37,13 @@ public class FoundationDbAdapter implements DisposableBean {
         db.close();
     }
 
-    public <T> void put(T entity, String subspaceName) {
-        // TODO
+    public void put(String subspaceName, Tuple key, Tuple value) {
+
+        Subspace subspace = new Subspace(Tuple.from(subspaceName));
+
+        db.run((Transaction tr) -> {
+            tr.set(subspace.pack(key), value.pack());
+            return null;
+        });
     }
 }

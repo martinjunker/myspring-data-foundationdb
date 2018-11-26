@@ -13,28 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.h2cl.spring.data.foundationdb.core.convert;
+package de.h2cl.spring.data.foundationdb.core;
 
 import de.h2cl.spring.data.foundationdb.core.mapping.FoundationDbPersistentEntity;
 import de.h2cl.spring.data.foundationdb.core.mapping.FoundationDbPersistentProperty;
-import org.springframework.data.convert.EntityConverter;
-
-import com.apple.foundationdb.tuple.Tuple;
-
-import de.h2cl.spring.data.foundationdb.core.mapping.FoundationDbMappingContext;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.mapping.context.MappingContext;
 
 /**
- * FoundationDb specific {@link EntityConverter}.
- *
- * @author Christoph Strobl
- * @author Mark Paluch
+ * Common operations performed on an entity in the context of it's mapping metadata.
  */
-public interface FoundationDbConverter extends EntityConverter<FoundationDbPersistentEntity<?>, FoundationDbPersistentProperty, Object, Tuple> {
+@RequiredArgsConstructor
+class EntityOperations {
 
-    /*
-     * (non-Javadoc)
-     * @see org.springframework.data.convert.EntityConverter#getMappingContext()
-     */
-    @Override
-    FoundationDbMappingContext getMappingContext();
+    private final @NonNull MappingContext<? extends FoundationDbPersistentEntity<?>, FoundationDbPersistentProperty> context;
+
+
+
 }
